@@ -481,7 +481,7 @@ public class NERMsrContextGeneratorConf implements NERMsrContextGenerator{
 		return "NERMsrContextGeneratorConf{" + "w_2Set=" + w_2Set + ", w_1Set=" + w_1Set + 
                 ", w0Set=" + w0Set + ", w1Set=" + w1Set + ", w2Set=" + w2Set + 
                 ", w_2w_1Set=" + w_2w_1Set + ", w_1w0Set=" + w_1w0Set + 
-                ", w0w1Set=" + w0w1Set + ", c1c2Set=" + w1w2Set + 
+                ", w0w1Set=" + w0w1Set + ", w1w2Set=" + w1w2Set + 
                 ", w_1w1Set=" + w_1w1Set + ", PuSet=" + PuSet + 
                 ", TSet=" + TSet + ", t_2Set=" + t_2Set + 
                 ", t_1Set=" + t_1Set + ", t_2t_1Set=" + t_2t_1Set +  

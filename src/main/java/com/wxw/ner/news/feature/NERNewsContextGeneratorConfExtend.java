@@ -1660,5 +1660,36 @@ public class NERNewsContextGeneratorConfExtend implements NERNewsContextGenerato
         return contexts;
 	}
 
+	@Override
+	public String toString() {
+		/**
+		 * private boolean w_2Set;
+    private boolean w_1Set;
+    private boolean w0Set;
+    private boolean w1Set;
+    private boolean w2Set;
+    private boolean p_2Set;
+    private boolean p_1Set;
+    private boolean p0Set;
+    private boolean p1Set;
+    private boolean ;
+    private boolean ;
+    private boolean ;
+		 */
+		return "NERNewsContextGeneratorConfExtend{" + "w_2Set=" + w_2Set + ", w_1Set=" + w_1Set + 
+                ", w0Set=" + w0Set + ", w1Set=" + w1Set + ", w2Set=" + w2Set + 
+                ", p_2Set=" + p_2Set + ", p_1Set=" + p_1Set + 
+                ", p0Set=" + p0Set + ", p1Set=" + p1Set + ", p2Set=" + p2Set + 
+                ", t_1Set=" + t_1Set + ", t_2Set=" + t_2Set + 
+                ", p_2p0Set=" + p_2p0Set + ", p_2p1Set=" + p_2p1Set + ", p_1p0Set=" + p_1p0Set + 
+                ", w1p0Set=" + w1p0Set + ", p0p1Set=" + p0p1Set + ", p0p2Set=" + p0p2Set +                
+                ", w_1p0Set=" + w_1p0Set + ", w_1p_1Set=" + w_1p_1Set + ", w1p1Set=" + w1p1Set + 
+                ", w2p2Set=" + w2p2Set + ", p0t_1Set=" + p0t_1Set + 
+                ", p0t_2Set=" + p0t_2Set + ", w0t_2Set=" + w0t_2Set + ", w0t_1Set=" + w0t_1Set + 
+                ", t_1t_2p0Set=" + t_1t_2p0Set + ", t_2p0p1Set=" + t_2p0p1Set + ", p_1t_1p0Set=" + p_1t_1p0Set + 
+                ", t_1w0p0Set=" + t_1w0p0Set + 
+                 ", Lt0Set=" + Lt0Set + ", w_1t0Set=" + w_1t0Set + ", w0t0Set=" + w0t0Set + ", w1t0Set=" + w1t0Set + 
+                '}';
+	}
 }
 

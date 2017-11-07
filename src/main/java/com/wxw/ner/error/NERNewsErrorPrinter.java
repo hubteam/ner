@@ -23,10 +23,10 @@ private PrintStream errOut;
 	@Override
 	public void missclassified(NERNewsSample reference, NERNewsSample predict) {
 		 errOut.println("样本的结果：");
-//		 errOut.print(reference.toSample());
+		 errOut.print(reference.toSample());
 		 errOut.println();
 		 errOut.println("预测的结果：");
-//		 errOut.print(predict.toSample());
+		 errOut.print(predict.toSample());
 		 errOut.println();
 	}
 }

@@ -1,7 +1,6 @@
 package com.wxw.ner.evaluate;
 
 import com.wxw.ner.news.model.NERNewsME;
-import com.wxw.ner.sample.NERMsrSample;
 import com.wxw.ner.sample.NERNewsSample;
 
 import opennlp.tools.util.eval.Evaluator;
@@ -64,28 +63,27 @@ public class NERNewsEvaluator extends Evaluator<NERNewsSample>{
 		
 		String[] wordsAndtagsPre = tagger.tag(charactersRef, posRef, acRef);
 		
-		String[] tagsRef = NERMsrSample.toPos(wordsAndtagsRef);
-		String[] wordsRef = NERMsrSample.toWord(charactersRef, wordsAndtagsRef);
-		String[] tagsPre = NERMsrSample.toPos(wordsAndtagsPre);
-		String[] wordsPre = NERMsrSample.toWord(charactersRef, wordsAndtagsPre);
+		String[] tagsRef = NERNewsSample.toPos(wordsAndtagsRef);
+		String[] wordsRef = NERNewsSample.toWord(charactersRef, wordsAndtagsRef);
+		String[] tagsPre = NERNewsSample.toPos(wordsAndtagsPre);
+		String[] wordsPre = NERNewsSample.toWord(charactersRef, wordsAndtagsPre);
 		
 		NERNewsSample prediction = new NERNewsSample(charactersRef, posRef, wordsAndtagsPre);
 		measure.update(wordsRef, tagsRef, wordsPre, tagsPre);
-//		
-//		for (int i = 0; i < wordsAndtagsPre.length; i++) {
-//			System.out.print(wordsAndtagsPre[i]);
-//		}
-//		System.out.println();
+
+//		if(!sample.equals(prediction)){
+//			System.out.println("正确的结果：");
+//			for (int i = 0; i < tagsRef.length; i++) {
+//				System.out.print(wordsRef[i]+"/"+tagsRef[i]);
+//			}
+//			System.out.println();
 //
-//		for (int i = 0; i < tagsRef.length; i++) {
-//			System.out.print(wordsRef[i]+"/"+tagsRef[i]);
+//			System.out.println("错误的结果：");
+//			for (int i = 0; i < tagsPre.length; i++) {
+//				System.out.print(wordsPre[i]+"/"+tagsPre[i]);
+//			}
+//			System.out.println();
 //		}
-//		System.out.println();
-//
-//		for (int i = 0; i < tagsPre.length; i++) {
-//			System.out.print(wordsPre[i]+"/"+tagsPre[i]);
-//		}
-//		System.out.println();
 
 		return prediction;
 	}

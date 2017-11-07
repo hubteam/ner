@@ -13,7 +13,7 @@ import opennlp.tools.util.ObjectStream;
 
 public class NERMsrSampleEvent extends AbstractEventStream<NERMsrSample>{
 
-private NERMsrContextGenerator generator;
+	private NERMsrContextGenerator generator;
 	
 	/**
 	 * 构造
@@ -24,7 +24,7 @@ private NERMsrContextGenerator generator;
 		super(samples);
 		this.generator = generator;
 	}
-
+	
 	@Override
 	protected Iterator<Event> createEvents(NERMsrSample sample) {
 		String[] words = sample.getWords();
@@ -43,9 +43,7 @@ private NERMsrContextGenerator generator;
 	 */
 	private List<Event> generateEvents(String[] words, String[] tags, String[][] ac) {
 		List<Event> events = new ArrayList<Event>(words.length);
-
-		for (int i = 0; i < words.length; i++) {
-			
+		for (int i = 0; i < words.length; i++) {			
 			//产生事件的部分
 			String[] context = generator.getContext(i, words, tags, ac);
 			events.add(new Event(tags[i], context));			          

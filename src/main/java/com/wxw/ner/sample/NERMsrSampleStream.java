@@ -17,6 +17,7 @@ import opennlp.tools.util.ObjectStream;
  */
 public class NERMsrSampleStream extends FilterObjectStream<String,NERMsrSample>{
 
+	//自定义日志记录器
 	private static Logger logger = Logger.getLogger(NERMsrSampleStream.class.getName());
 	/**
 	 * 构造
@@ -24,7 +25,6 @@ public class NERMsrSampleStream extends FilterObjectStream<String,NERMsrSample>{
 	 */
 	public NERMsrSampleStream(ObjectStream<String> samples) {
 		super(samples);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**

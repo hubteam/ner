@@ -44,7 +44,7 @@ import opennlp.tools.util.TrainingParameters;
  * @author 王馨苇
  *
  */
-public class NERNewsME {
+public class NERNewsME implements NERNews{
 	public static final int DEFAULT_BEAM_SIZE = 3;
 	private NERNewsContextGenerator contextGenerator;
 	private int size;
@@ -300,6 +300,82 @@ public class NERNewsME {
 
         return dict;
     }
+	/**
+	 * 读入一句词性标注的语料，得到最终结果
+	 * @param sentence 读取的生语料
+	 * @return
+	 */
+	@Override
+	public String[] ner(String sentence) {
+		String[] str = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
+		List<String> words = new ArrayList<>();
+		List<String> tags = new ArrayList<>();
+		for (int i = 0; i < str.length; i++) {
+			String word = str[i].split("/")[0];
+			String tag = str[i].split("/")[1];
+			words.add(word);
+			tags.add(tag);
+		}
+		return ner(words.toArray(new String[words.size()]),
+				tags.toArray(new String[tags.size()]));
+	}
+	/**
+	 * 读入词性标注的语料，得到命名实体
+	 * @param words 词语
+	 * @param poses 词性
+	 * @return
+	 */
+	@Override
+	public String[] ner(String[] words, String[] poses) {
+		String[] tags = tag(words,poses,null);
+		String[] ner = NERNewsSample.toPos(tags);
+		String[] word = NERNewsSample.toWord(words, tags);
+		String[] output = null;
+		for (int i = 0; i < ner.length; i++) {
+			output[i] = word[i]+"/"+ner[i];
+		}
+		return output;
+	}
 
+	/**
+	 * 得到最好的numTaggings个标记序列
+	 * @param numTaggings 个数
+	 * @param characters 一个个词语
+	 * @param pos 词性标注
+	 * @return 分词加词性标注的序列
+	 */
+	public String[][] tag(int numTaggings, String[] characters,String[] pos) {
+        Sequence[] bestSequences = model.bestSequences(numTaggings, characters, pos, null,
+        		contextGenerator, sequenceValidator);
+        String[][] tagsandposes = new String[bestSequences.length][];
+        for (int si = 0; si < tagsandposes.length; si++) {
+            List<String> t = bestSequences[si].getOutcomes();
+            tagsandposes[si] = t.toArray(new String[t.size()]);
+           
+        }
+        return tagsandposes;
+    }
+
+	/**
+	 * 最好的K个序列
+	 * @param characters 一个个词语
+	 * @param pos 词性标注
+	 * @return
+	 */
+    public Sequence[] topKSequences(String[] characters,String[] pos) {
+        return this.topKSequences(characters, pos, null);
+    }
+
+    /**
+     * 最好的K个序列
+     * @param characters 一个个词语
+     * @param pos 词性标注
+     * @param additionaContext
+     * @return 
+     */
+    public Sequence[] topKSequences(String[] characters, String[] pos, Object[] additionaContext) {
+        return model.bestSequences(size, characters, pos, additionaContext,
+        		contextGenerator, sequenceValidator);
+    }
 }
 

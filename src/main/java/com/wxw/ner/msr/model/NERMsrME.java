@@ -258,10 +258,7 @@ public class NERMsrME implements NERMsr{
 
         return words.toArray(new String[words.size()]);
 	}
-	public String[] ner(String sentence, String flag) {
-		String[] tags = tag(sentence);
-		return null;
-	}
+
 	
 	/**
 	 * 得到标注的结果
@@ -269,7 +266,14 @@ public class NERMsrME implements NERMsr{
 	 * @return
 	 */
 	public String[] tag(String[] sentence) {
-        return this.tag(sentence, null);
+		String[] tags = this.tag(sentence, null);
+		String[] wordTag = NERMsrSample.toPos(tags);
+		String[] words = NERMsrSample.toWord(sentence, tags);
+		String[] output = null;
+		for (int i = 0; i < wordTag.length; i++) {
+			output[i] = words[i]+"/"+wordTag[i];
+		}
+        return output;
     }
 
 	/**
@@ -286,5 +290,44 @@ public class NERMsrME implements NERMsr{
 
         return tag(chars);
     }
+    
+    /**
+	 * 得到最好的numTaggings个标记序列
+	 * @param numTaggings 个数
+	 * @param characters 一个个字
+	 * @return 分词加词性标注的序列
+	 */
+	public String[][] tag(int numTaggings, String[] characters) {
+        Sequence[] bestSequences = model.bestSequences(numTaggings, characters, null,
+        		contextGenerator, sequenceValidator);
+        String[][] tagsandposes = new String[bestSequences.length][];
+        for (int si = 0; si < tagsandposes.length; si++) {
+            List<String> t = bestSequences[si].getOutcomes();
+            tagsandposes[si] = t.toArray(new String[t.size()]);
+           
+        }
+        return tagsandposes;
+    }
+
+	/**
+	 * 最好的K个序列
+	 * @param characters 一个个字
+	 * @return
+	 */
+    public Sequence[] topKSequences(String[] characters) {
+        return this.topKSequences(characters, null);
+    }
+
+    /**
+     * 最好的K个序列
+     * @param characters 一个个字
+     * @param additionaContext
+     * @return 
+     */
+    public Sequence[] topKSequences(String[] characters, Object[] additionaContext) {
+        return model.bestSequences(size, characters, additionaContext,
+        		contextGenerator, sequenceValidator);
+    }
+    
 }
 
