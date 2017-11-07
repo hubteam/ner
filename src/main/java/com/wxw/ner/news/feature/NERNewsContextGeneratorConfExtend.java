@@ -76,49 +76,49 @@ public class NERNewsContextGeneratorConfExtend implements NERNewsContextGenerato
 	 * @param config 配置文件
 	 */
 	private void init(Properties config) {
-		w_2Set = (config.getProperty("msr.w_2", "true").equals("true"));
-        w_1Set = (config.getProperty("msr.w_1", "true").equals("true"));
-        w0Set = (config.getProperty("msr.w0", "true").equals("true"));
-        w1Set = (config.getProperty("msr.w1", "true").equals("true"));
-        w2Set = (config.getProperty("msr.w2", "true").equals("true"));
+		w_2Set = (config.getProperty("newsextend.w_2", "true").equals("true"));
+        w_1Set = (config.getProperty("newsextend.w_1", "true").equals("true"));
+        w0Set = (config.getProperty("newsextend.w0", "true").equals("true"));
+        w1Set = (config.getProperty("newsextend.w1", "true").equals("true"));
+        w2Set = (config.getProperty("newsextend.w2", "true").equals("true"));
         
-        p_2Set = (config.getProperty("msr.p_2", "true").equals("true"));
-        p_1Set = (config.getProperty("msr.p_1", "true").equals("true"));
-        p0Set = (config.getProperty("msr.p0", "true").equals("true"));
-        p1Set = (config.getProperty("msr.p1", "true").equals("true"));
-        p2Set = (config.getProperty("msr.p2", "true").equals("true"));
+        p_2Set = (config.getProperty("newsextend.p_2", "true").equals("true"));
+        p_1Set = (config.getProperty("newsextend.p_1", "true").equals("true"));
+        p0Set = (config.getProperty("newsextend.p0", "true").equals("true"));
+        p1Set = (config.getProperty("newsextend.p1", "true").equals("true"));
+        p2Set = (config.getProperty("newsextend.p2", "true").equals("true"));
 
-        t_1Set = (config.getProperty("msr.t_1", "true").equals("true"));
-        t_2Set = (config.getProperty("msr.t_2", "true").equals("true"));
+        t_1Set = (config.getProperty("newsextend.t_1", "true").equals("true"));
+        t_2Set = (config.getProperty("newsextend.t_2", "true").equals("true"));
         
-        p_2p0Set = (config.getProperty("msr.p_2p0", "true").equals("true"));
-        p_2p1Set = (config.getProperty("msr.p_2p1", "true").equals("true"));
-        p_1p0Set = (config.getProperty("msr.p_1p0", "true").equals("true"));
-        w1p0Set = (config.getProperty("msr.w1p0", "true").equals("true"));
-        p0p1Set = (config.getProperty("msr.p0p1", "true").equals("true"));
-        p0p2Set = (config.getProperty("msr.p0p2", "true").equals("true"));
+        p_2p0Set = (config.getProperty("newsextend", "true").equals("true"));
+        p_2p1Set = (config.getProperty("newsextend.p_2p1", "true").equals("true"));
+        p_1p0Set = (config.getProperty("newsextend.p_1p0", "true").equals("true"));
+        w1p0Set = (config.getProperty("newsextend.w1p0", "true").equals("true"));
+        p0p1Set = (config.getProperty("newsextend.p0p1", "true").equals("true"));
+        p0p2Set = (config.getProperty("newsextend.p0p2", "true").equals("true"));
         
-        w_1p0Set = (config.getProperty("msr.w_1p0", "true").equals("true"));
-        w_1p_1Set = (config.getProperty("msr.w_1p_1", "true").equals("true"));
-        w1p1Set = (config.getProperty("msr.w1p1", "true").equals("true"));
-        w2p2Set = (config.getProperty("msr.w2p2", "true").equals("true"));
+        w_1p0Set = (config.getProperty("newsextend.w_1p0", "true").equals("true"));
+        w_1p_1Set = (config.getProperty("newsextend.w_1p_1", "true").equals("true"));
+        w1p1Set = (config.getProperty("newsextend.w1p1", "true").equals("true"));
+        w2p2Set = (config.getProperty("newsextend.w2p2", "true").equals("true"));
         
-        p0t_1Set = (config.getProperty("msr.p0t_1", "true").equals("true"));
-        p0t_2Set = (config.getProperty("msr.p0t_2", "true").equals("true"));
+        p0t_1Set = (config.getProperty("newsextend.p0t_1", "true").equals("true"));
+        p0t_2Set = (config.getProperty("newsextend.p0t_2", "true").equals("true"));
         
-        w0t_2Set = (config.getProperty("msr.w0t_2", "true").equals("true"));
-        w0t_1Set = (config.getProperty("msr.w0t_1", "true").equals("true"));
+        w0t_2Set = (config.getProperty("newsextend.w0t_2", "true").equals("true"));
+        w0t_1Set = (config.getProperty("newsextend.w0t_1", "true").equals("true"));
         
-        t_1t_2p0Set = (config.getProperty("msr.t_1t_2p0", "true").equals("true"));
-        t_2p0p1Set = (config.getProperty("msr.t_2p0p1", "true").equals("true"));
-        p_1t_1p0Set = (config.getProperty("msr.p_1t_1p0", "true").equals("true"));
-        t_1w0p0Set = (config.getProperty("msr.t_1w0p0", "true").equals("true"));
+        t_1t_2p0Set = (config.getProperty("newsextend.t_1t_2p0", "true").equals("true"));
+        t_2p0p1Set = (config.getProperty("newsextend.t_2p0p1", "true").equals("true"));
+        p_1t_1p0Set = (config.getProperty("newsextend.p_1t_1p0", "true").equals("true"));
+        t_1w0p0Set = (config.getProperty("newsextend.t_1w0p0", "true").equals("true"));
         
      // 获取配置文件中的字典特征的设置值
-        Lt0Set = (config.getProperty("msr.Lt0", "true").equals("true"));
-        w_1t0Set = (config.getProperty("msr.w_1t0", "true").equals("true"));
-        w0t0Set = (config.getProperty("msr.w0t0", "true").equals("true"));
-        w1t0Set = (config.getProperty("msr.w1t0", "true").equals("true"));      
+        Lt0Set = (config.getProperty("newsextend.Lt0", "true").equals("true"));
+        w_1t0Set = (config.getProperty("newsextend.w_1t0", "true").equals("true"));
+        w0t0Set = (config.getProperty("newsextend.w0t0", "true").equals("true"));
+        w1t0Set = (config.getProperty("newsextend.w1t0", "true").equals("true"));      
 	}
 	
 	public String[] getContext(int index, String[] words, String[] poses, String[] tags, Object[] ac) {
