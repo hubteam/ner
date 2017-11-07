@@ -91,7 +91,7 @@ public class NERNewsContextGeneratorConfExtend implements NERNewsContextGenerato
         t_1Set = (config.getProperty("newsextend.t_1", "true").equals("true"));
         t_2Set = (config.getProperty("newsextend.t_2", "true").equals("true"));
         
-        p_2p0Set = (config.getProperty("newsextend", "true").equals("true"));
+        p_2p0Set = (config.getProperty("newsextend.p_2p0", "true").equals("true"));
         p_2p1Set = (config.getProperty("newsextend.p_2p1", "true").equals("true"));
         p_1p0Set = (config.getProperty("newsextend.p_1p0", "true").equals("true"));
         w1p0Set = (config.getProperty("newsextend.w1p0", "true").equals("true"));
