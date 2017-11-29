@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import com.wxw.ner.news.feature.NERNewsBeamSearchContextGenerator;
+import com.wxw.ner.wordandpos.feature.NERWordAndPosBeamSearchContextGenerator;
 
 import opennlp.tools.ml.model.MaxentModel;
 import opennlp.tools.util.Cache;
@@ -49,7 +49,7 @@ public class NERBeamSearch<T> implements NERSequenceClassificationModel<T> {
 	 * @param arg5 序列的验证器
 	 * @return 最好的序列
 	 */
-	public Sequence bestSequence(T[] arg0, T[] arg1, Object[] arg3, NERNewsBeamSearchContextGenerator<T> arg4,
+	public Sequence bestSequence(T[] arg0, T[] arg1, Object[] arg3, NERWordAndPosBeamSearchContextGenerator<T> arg4,
 			NERSequenceValidator<T> arg5) {
 		Sequence[] sequences = this.bestSequences(1, arg0, arg1, arg3, arg4, arg5);
 		return sequences.length > 0 ? sequences[0] : null;
@@ -67,7 +67,7 @@ public class NERBeamSearch<T> implements NERSequenceClassificationModel<T> {
 	 * @return
 	 */
 	public Sequence[] bestSequences(int numSequences, T[] sequence, T[] pos, Object[] additionalContext, double minSequenceScore,
-			NERNewsBeamSearchContextGenerator<T> cg, NERSequenceValidator<T> validator) {
+			NERWordAndPosBeamSearchContextGenerator<T> cg, NERSequenceValidator<T> validator) {
 		PriorityQueue<Sequence> prev = new PriorityQueue<Sequence>(this.size);
 		PriorityQueue<Sequence> next = new PriorityQueue<Sequence>(this.size);
 		prev.add(new Sequence());
@@ -155,7 +155,7 @@ public class NERBeamSearch<T> implements NERSequenceClassificationModel<T> {
 	 * @param arg6 序列的验证器
 	 * @return
 	 */
-	public Sequence[] bestSequences(int arg0, T[] arg1, T[] arg2, Object[] arg4, NERNewsBeamSearchContextGenerator<T> arg5,
+	public Sequence[] bestSequences(int arg0, T[] arg1, T[] arg2, Object[] arg4, NERWordAndPosBeamSearchContextGenerator<T> arg5,
 			NERSequenceValidator<T> arg6) {
 		return this.bestSequences(arg0, arg1, arg2, arg4, -100000.0D, arg5, arg6);
 	}

@@ -1,6 +1,6 @@
 package com.wxw.ner.sequence;
 
-import com.wxw.ner.news.feature.NERNewsBeamSearchContextGenerator;
+import com.wxw.ner.wordandpos.feature.NERWordAndPosBeamSearchContextGenerator;
 
 import opennlp.tools.util.Sequence;
 
@@ -20,7 +20,7 @@ public interface NERSequenceClassificationModel<T> {
 	 * @param arg5 序列的验证器
 	 * @return 最好的序列
 	 */
-	Sequence bestSequence(T[] arg0, T[] arg1, Object[] arg3, NERNewsBeamSearchContextGenerator<T> arg4, NERSequenceValidator<T> arg5) ;
+	Sequence bestSequence(T[] arg0, T[] arg1, Object[] arg3, NERWordAndPosBeamSearchContextGenerator<T> arg4, NERSequenceValidator<T> arg5) ;
 
 	/**
 	 * 得到最好的arg0个序列
@@ -33,7 +33,7 @@ public interface NERSequenceClassificationModel<T> {
 	 * @param arg7 序列的验证器
 	 * @return
 	 */
-	Sequence[] bestSequences(int arg0, T[] arg1, T[] arg2, Object[] arg4, double arg5, NERNewsBeamSearchContextGenerator<T> arg6,
+	Sequence[] bestSequences(int arg0, T[] arg1, T[] arg2, Object[] arg4, double arg5, NERWordAndPosBeamSearchContextGenerator<T> arg6,
 			NERSequenceValidator<T> arg7);
 
 	/**
@@ -46,7 +46,7 @@ public interface NERSequenceClassificationModel<T> {
 	 * @param arg6 序列的验证器
 	 * @return
 	 */
-	Sequence[] bestSequences(int arg0, T[] arg1, T[] arg2, Object[] arg4, NERNewsBeamSearchContextGenerator<T> arg5,
+	Sequence[] bestSequences(int arg0, T[] arg1, T[] arg2, Object[] arg4, NERWordAndPosBeamSearchContextGenerator<T> arg5,
 			NERSequenceValidator<T> arg6);
 	
 	/**
