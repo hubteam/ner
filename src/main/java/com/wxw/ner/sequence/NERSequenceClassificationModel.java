@@ -53,5 +53,5 @@ public interface NERSequenceClassificationModel<T> {
 	 * 得到最好的结果
 	 * @return
 	 */
-	String[] getOutcomes();
+	public String[] getOutcomes();
 }

@@ -169,7 +169,6 @@ public class NERWordSample {
 	public static String[] toWord(String[] characters, String[] tagsandposesPre) {
 		String word = new String();
         ArrayList<String> words = new ArrayList<String>();       
-        List<String> poses = new ArrayList<String>();
 		int i = 0;
 		while(i < tagsandposesPre.length){
 			if(tagsandposesPre[i].equals("o")){				

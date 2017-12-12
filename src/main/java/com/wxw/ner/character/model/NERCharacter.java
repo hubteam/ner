@@ -20,5 +20,20 @@ public interface NERCharacter {
 	 * @return
 	 */
 	public String[] ner(String[] sentence);
+	/**
+	 * 读入一句生语料，进行标注，得到指定的命名实体
+	 * @param sentence 读取的生语料
+	 * @param flag 命名实体标记
+	 * @return
+	 */
+	public String[] ner(String sentence,String flag);
+	
+	/**
+	 * 读入一段单个字组成的语料,得到指定的命名实体
+	 * @param sentence 单个字组成的数组
+	 * @param flag 命名实体标记
+	 * @return
+	 */
+	public String[] ner(String[] sentence,String flag);
 	
 }

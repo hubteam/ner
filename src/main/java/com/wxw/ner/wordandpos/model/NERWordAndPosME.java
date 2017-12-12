@@ -51,8 +51,6 @@ public class NERWordAndPosME implements NERWordAndPos{
 	private Sequence bestSequence;
 	private NERSequenceClassificationModel<String> model;
 	private NERWordAndPosModel modelPackage;
-	private List<String> characters = new ArrayList<String>();
-	private List<String> tags = new ArrayList<String>();
 
     private NERSequenceValidator<String> sequenceValidator;
 	
@@ -300,7 +298,48 @@ public class NERWordAndPosME implements NERWordAndPos{
 
         return dict;
     }
+	
 	/**
+	 * 得到最好的numTaggings个标记序列
+	 * @param numTaggings 个数
+	 * @param characters 一个个词语
+	 * @param pos 词性标注
+	 * @return 分词加词性标注的序列
+	 */
+	public String[][] tag(int numTaggings, String[] characters,String[] pos) {
+        Sequence[] bestSequences = model.bestSequences(numTaggings, characters, pos, null,
+        		contextGenerator, sequenceValidator);
+        String[][] tagsandposes = new String[bestSequences.length][];
+        for (int si = 0; si < tagsandposes.length; si++) {
+            List<String> t = bestSequences[si].getOutcomes();
+            tagsandposes[si] = t.toArray(new String[t.size()]);  
+        }
+        return tagsandposes;
+    }
+
+	/**
+	 * 最好的K个序列
+	 * @param characters 一个个词语
+	 * @param pos 词性标注
+	 * @return
+	 */
+    public Sequence[] topKSequences(String[] characters,String[] pos) {
+        return this.topKSequences(characters, pos, null);
+    }
+
+    /**
+     * 最好的K个序列
+     * @param characters 一个个词语
+     * @param pos 词性标注
+     * @param additionaContext
+     * @return 
+     */
+    public Sequence[] topKSequences(String[] characters, String[] pos, Object[] additionaContext) {
+        return model.bestSequences(size, characters, pos, additionaContext,
+        		contextGenerator, sequenceValidator);
+    }
+    
+    /**
 	 * 读入一句词性标注的语料，得到最终结果
 	 * @param sentence 读取的生语料
 	 * @return
@@ -329,53 +368,56 @@ public class NERWordAndPosME implements NERWordAndPos{
 	public String[] ner(String[] words, String[] poses) {
 		String[] tags = tag(words,poses,null);
 		String[] ner = NERWordAndPosSample.toPos(tags);
-		String[] word = NERWordAndPosSample.toWord(words, tags);
-		String[] output = null;
+		String[] word = NERWordAndPosSample.toWordAndPos(words,poses,tags);
+		String[] output = null;;
 		for (int i = 0; i < ner.length; i++) {
-			output[i] = word[i]+"/"+ner[i];
+			output[i] = "["+word[i]+"]"+ner[i];
 		}
 		return output;
 	}
-
+	
 	/**
-	 * 得到最好的numTaggings个标记序列
-	 * @param numTaggings 个数
-	 * @param characters 一个个词语
-	 * @param pos 词性标注
-	 * @return 分词加词性标注的序列
-	 */
-	public String[][] tag(int numTaggings, String[] characters,String[] pos) {
-        Sequence[] bestSequences = model.bestSequences(numTaggings, characters, pos, null,
-        		contextGenerator, sequenceValidator);
-        String[][] tagsandposes = new String[bestSequences.length][];
-        for (int si = 0; si < tagsandposes.length; si++) {
-            List<String> t = bestSequences[si].getOutcomes();
-            tagsandposes[si] = t.toArray(new String[t.size()]);
-           
-        }
-        return tagsandposes;
-    }
-
-	/**
-	 * 最好的K个序列
-	 * @param characters 一个个词语
-	 * @param pos 词性标注
+	 * 读入一句词性标注的语料，得到指定的命名实体
+	 * @param sentence 读取的词性标注的语料
+	 * @param flag 命名实体标记
 	 * @return
 	 */
-    public Sequence[] topKSequences(String[] characters,String[] pos) {
-        return this.topKSequences(characters, pos, null);
-    }
-
-    /**
-     * 最好的K个序列
-     * @param characters 一个个词语
-     * @param pos 词性标注
-     * @param additionaContext
-     * @return 
-     */
-    public Sequence[] topKSequences(String[] characters, String[] pos, Object[] additionaContext) {
-        return model.bestSequences(size, characters, pos, additionaContext,
-        		contextGenerator, sequenceValidator);
-    }
+	@Override
+	public String[] ner(String sentence, String flag) {
+		String[] str = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
+		List<String> words = new ArrayList<>();
+		List<String> tags = new ArrayList<>();
+		for (int i = 0; i < str.length; i++) {
+			String word = str[i].split("/")[0];
+			String tag = str[i].split("/")[1];
+			words.add(word);
+			tags.add(tag);
+		}
+		return ner(words.toArray(new String[words.size()]),
+				tags.toArray(new String[tags.size()]),flag);
+	}
+	
+	/**
+	 * 读入词性标注的语料，得到指定的命名实体
+	 * @param words 词语
+	 * @param poses 词性
+	 * @param flag 命名实体标记
+	 * @return
+	 */
+	@Override
+	public String[] ner(String[] words, String[] poses, String flag) {
+		String[] tags = tag(words,poses,null);
+		String[] ner = NERWordAndPosSample.toPos(tags);
+		String[] word = NERWordAndPosSample.toWordAndPos(words,poses,tags);
+		String[] output = null;;
+		for (int i = 0; i < ner.length; i++) {
+			if(ner[i].equals(flag)){
+				output[i] = "["+word[i]+"]"+ner[i];
+			}else{
+				output[i] = "["+word[i]+"]"+"o";
+			}
+		}
+		return output;
+	}
 }
 

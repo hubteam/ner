@@ -19,7 +19,6 @@ public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,NE
 	 */
 	public NERCharacterSampleStreamSingle(ObjectStream<String> samples) {
 		super(samples);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -28,13 +27,12 @@ public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,NE
 	 */	
 	public NERCharacterSample read() throws IOException {
 		String sentence = samples.read();
-		NERParseContext context = new NERParseContext(new NERParseCharacterSingle(),sentence);
+		NERParseContext context = new NERParseContext(new NERParseCharacterSingle());
 		NERCharacterSample sample = null;
 		if(sentence != null){
 			if(sentence.compareTo("") != 0){
 				try{
-					//System.out.println(sentences);
-					sample = context.parseSample();;
+					sample = context.parseSample(sentence);;
 				}catch(Exception e){
 					if (logger.isLoggable(Level.WARNING)) {
 						
@@ -42,7 +40,6 @@ public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,NE
 	                }
 					sample = new NERCharacterSample(new String[]{},new String[]{});
 				}
-
 				return sample;
 			}else {
 				sample = new NERCharacterSample(new String[]{},new String[]{});

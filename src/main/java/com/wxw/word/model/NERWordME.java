@@ -299,9 +299,41 @@ public class NERWordME implements NERWord{
 		String[] tags = tag(words,null);
 		String[] nerwords = NERWordSample.toWord(words, tags);
 		String[] nertags = NERWordSample.toPos(tags);
-		String[] output = null;
+		String[] output = new String[nerwords.length];
 		for (int i = 0; i < nerwords.length; i++) {
 			output[i] = nerwords[i]+"/"+nertags[i];
+		}
+ 		return output;
+	}
+	/**
+	 * 读入一句分词的语料，得到指定的命名实体
+	 * @param sentence 读取的分词的语料
+	 * @param flag 命名实体标记
+	 * @return
+	 */
+	@Override
+	public String[] ner(String sentence, String flag) {
+		String[] words = sentence.split(" ");
+		return ner(words,flag);
+	}
+	/**
+	 * 读入分词的语料，得到指定的命名实体
+	 * @param words 词语
+	 * @param flag 命名实体标记
+	 * @return
+	 */
+	@Override
+	public String[] ner(String[] words, String flag) {
+		String[] tags = tag(words,null);
+		String[] nerwords = NERWordSample.toWord(words, tags);
+		String[] nertags = NERWordSample.toPos(tags);
+		String[] output = new String[nerwords.length];
+		for (int i = 0; i < nerwords.length; i++) {
+			if(nertags[i].equals(flag)){
+				output[i] = nerwords[i]+"/"+nertags[i];
+			}else{
+				output[i] = nerwords[i]+"/"+"o";
+			}
 		}
  		return output;
 	}

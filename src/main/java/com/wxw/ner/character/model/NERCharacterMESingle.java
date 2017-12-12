@@ -15,7 +15,6 @@ import com.wxw.ner.character.feature.NERCharacterContextGenerator;
 import com.wxw.ner.event.NERCharacterSampleEvent;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERCharacterSample;
-import com.wxw.ner.sample.NERCharacterSampleStream;
 import com.wxw.ner.sample.NERCharacterSampleStreamSingle;
 import com.wxw.ner.sequence.DefaultNERCharacterSequenceValidator;
 
@@ -247,59 +246,49 @@ public class NERCharacterMESingle implements NERCharacterSingle{
 		return null;
 	}
 
-	/**
-	 * 输出指定的命名实体
-	 */
-	public String[] ner(String sentence, String flag) {
-		String[] tags = tag(sentence);
-		for (int i = 0; i < tags.length; i++) {
-			if(tags[i].equals(flag)){
-				
+	 /**
+	  * 读入一段单个字组成的语料
+	  * @param sentence 单个字组成的数组
+      * @return
+	  */		
+	@Override	
+	public String[] ner(String[] sentence,String flag) {		
+		String[] tags = this.tag(sentence, null);			
+		String[] wordTag = NERCharacterSample.toPos(tags);			
+		String[] words = NERCharacterSample.toWord(sentence, tags);			
+		String[] output = new String[wordTag.length];			
+		for (int i = 0; i < wordTag.length; i++) {	
+			if(wordTag.equals("flag")){
+				output[i] = words[i]+"/"+wordTag[i];
 			}else{
-				tags[i] = flag;
+				output[i] = words[i]+"/"+"o";
 			}
 		}
-		return tags;
+		return output;
+	} 
+		
+	/**
+	 * 得到命名实体识别的结果
+	 */
+	@Override
+	public String[] ner(String sentence,String flag) {	
+		String[] tags = tocharacters(sentence);   
+		return ner(tags,flag);
+		
 	}
 	
-	/**
-	 * 得到标注的结果
-	 * @param sentence 读入的语料转成的字符串数组
-	 * @return
-	 */
-	public String[] tag(String[] sentence) {
-        return this.tag(sentence, null);
-    }
-
 	/**
 	 * 生语料转换成字符串数组
 	 * @param sentence 读入的生语料
 	 * @return
-	 */
-    public String[] tag(String sentence) {
-        String[] chars = new String[sentence.length()];
+	 */	   
+	public String[] tocharacters(String sentence) {	       
+		String[] chars = new String[sentence.length()];	        
+		for (int i = 0; i < sentence.length(); i++) {	            
+			chars[i] = sentence.charAt(i) + "";	        
+		}	        
+		return chars;
 
-        for (int i = 0; i < sentence.length(); i++) {
-            chars[i] = sentence.charAt(i) + "";
-        }
-
-        return tag(chars);
-    }
-    
-    /**
-     * 输出指定的命名实体
-     */
-	@Override
-	public String[] ner(String[] sentence, String nerflag) {
-		String[] tags = this.tag(sentence,null);
-		for (int i = 0; i < tags.length; i++) {
-			if(tags[i].equals(nerflag)){
-				
-			}else{
-				tags[i] = nerflag;
-			}
-		}
-		return tags;
 	}
 }
 

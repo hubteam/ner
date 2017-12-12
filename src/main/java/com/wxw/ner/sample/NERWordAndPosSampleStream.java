@@ -25,7 +25,6 @@ public class NERWordAndPosSampleStream extends FilterObjectStream<String,NERWord
 	 */
 	public NERWordAndPosSampleStream(ObjectStream<String> samples) {
 		super(samples);
-		// TODO Auto-generated constructor stub
 	}
 
 	/**
@@ -34,21 +33,18 @@ public class NERWordAndPosSampleStream extends FilterObjectStream<String,NERWord
 	 */	
 	public NERWordAndPosSample read() throws IOException {
 		String sentence = samples.read();
-		NERParseContext context = new NERParseContext(new NERParseWordAndPos(),sentence);
+		NERParseContext context = new NERParseContext(new NERParseWordAndPos());
 		NERWordAndPosSample sample = null;
 		if(sentence != null){
 			if(sentence.compareTo("") != 0){
 				try{
-					//System.out.println(sentences);
-					sample = context.parseNewsSample();;
+					sample = context.parseNewsSample(sentence);;
 				}catch(Exception e){
-					if (logger.isLoggable(Level.WARNING)) {
-						
+					if (logger.isLoggable(Level.WARNING)) {					
 	                    logger.warning("Error during parsing, ignoring sentence: " + sentence);
 	                }
 					sample = new NERWordAndPosSample(new String[]{},new String[]{},new String[]{});
 				}
-
 				return sample;
 			}else {
 				sample = new NERWordAndPosSample(new String[]{},new String[]{},new String[]{});

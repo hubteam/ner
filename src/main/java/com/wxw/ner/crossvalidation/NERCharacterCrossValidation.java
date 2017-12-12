@@ -52,9 +52,6 @@ public class NERCharacterCrossValidation {
 		while(partitioner.hasNext()){
 			System.out.println("Run"+run+"...");
 			CrossValidationPartitioner.TrainingSampleStream<NERCharacterSample> trainingSampleStream = partitioner.next();
-			
-			//训练模型
-			trainingSampleStream.reset();
 			NERCharacterModel model = NERCharacterME.train(languageCode, trainingSampleStream, params, contextGenerator);
 
 			NERCharacterEvaluator evaluator = new NERCharacterEvaluator(new NERCharacterME(model, contextGenerator), monitor);

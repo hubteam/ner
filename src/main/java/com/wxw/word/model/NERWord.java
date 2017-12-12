@@ -20,4 +20,19 @@ public interface NERWord {
 	 * @return
 	 */
 	public String[] ner(String[] words);
+	/**
+	 * 读入一句分词的语料，得到指定的命名实体
+	 * @param sentence 读取的分词的语料
+	 * @param flag 命名实体标记
+	 * @return
+	 */
+	public String[] ner(String sentence,String flag);
+	
+	/**
+	 * 读入分词的语料，得到指定的命名实体
+	 * @param words 词语
+	 * @param flag 命名实体标记
+	 * @return
+	 */
+	public String[] ner(String[] words,String flag);
 }

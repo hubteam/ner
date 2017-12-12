@@ -11,11 +11,9 @@ import com.wxw.ner.sample.NERWordSample;
  */
 public class NERParseContext {
 
-	private String sentence;
 	private NERParseStrategy strategy;
 	
-	public NERParseContext(NERParseStrategy strategy, String sentence){
-		this.sentence = sentence;
+	public NERParseContext(NERParseStrategy strategy){
 		this.strategy = strategy;
 	}
 
@@ -23,7 +21,7 @@ public class NERParseContext {
 	 * 为基于字的命名实体解析文本
 	 * @return
 	 */
-	public NERCharacterSample parseSample(){
+	public NERCharacterSample parseSample(String sentence){
 		return strategy.parse(sentence);
 	}
 	
@@ -31,7 +29,7 @@ public class NERParseContext {
 	 * 为基于词性标注的命名实体解析文本
 	 * @return
 	 */
-	public NERWordAndPosSample parseNewsSample(){
+	public NERWordAndPosSample parseNewsSample(String sentence){
 		return strategy.parseNews(sentence);
 	}
 	
@@ -39,7 +37,7 @@ public class NERParseContext {
 	 * 为基于分词的命名实体解析文本
 	 * @return
 	 */
-	public NERWordSample parseWordSample(){
+	public NERWordSample parseWordSample(String sentence){
 		return strategy.parseWord(sentence);
 	}
 }

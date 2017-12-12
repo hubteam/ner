@@ -47,9 +47,6 @@ public class NERCharacterME implements NERCharacter{
 	private Sequence bestSequence;
 	private SequenceClassificationModel<String> model;
 	private NERCharacterModel modelPackage;
-	private List<String> characters = new ArrayList<String>();
-	private List<String> tags = new ArrayList<String>();
-
     private SequenceValidator<String> sequenceValidator;
 	
 	/**
@@ -194,10 +191,8 @@ public class NERCharacterME implements NERCharacter{
 	
 	public String[] tag(String[] characters,Object[] additionaContext){
 		bestSequence = model.bestSequence(characters, additionaContext, contextGenerator,sequenceValidator);
-      //  System.out.println(bestSequence);
 		List<String> t = bestSequence.getOutcomes();
 		return t.toArray(new String[t.size()]);
-//		return null;
 	}
 	/**
 	 * 根据训练得到的模型文件得到
@@ -234,65 +229,22 @@ public class NERCharacterME implements NERCharacter{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return null;
 	}
-	
-	/**
-	 * 得到命名实体识别的结果
-	 */
-	public String[] ner(String sentence) {
-		String[] tags = tag(sentence);
-		String word = new String();
-        ArrayList<String> words = new ArrayList<String>();
-        for (int i = 0; i < tags.length; i++) {
-            word += sentence.charAt(i);
-
-            if (tags[i].equals("S") || tags[i].equals("E")) {
-                words.add(word);
-                word = "";
-            }
-        }
-
-        if (word.length() > 0) {
-            words.add(word);
-        }
-
-        return words.toArray(new String[words.size()]);
-	}
-
-	
-	/**
-	 * 得到标注的结果
-	 * @param sentence 读入的语料转成的字符串数组
-	 * @return
-	 */
-	public String[] tag(String[] sentence) {
-		String[] tags = this.tag(sentence, null);
-		String[] wordTag = NERCharacterSample.toPos(tags);
-		String[] words = NERCharacterSample.toWord(sentence, tags);
-		String[] output = null;
-		for (int i = 0; i < wordTag.length; i++) {
-			output[i] = words[i]+"/"+wordTag[i];
-		}
-        return output;
-    }
 
 	/**
 	 * 生语料转换成字符串数组
 	 * @param sentence 读入的生语料
 	 * @return
 	 */
-    public String[] tag(String sentence) {
+    public String[] tocharacters(String sentence) {
         String[] chars = new String[sentence.length()];
-
         for (int i = 0; i < sentence.length(); i++) {
             chars[i] = sentence.charAt(i) + "";
         }
-
-        return tag(chars);
+        return chars;
     }
     
     /**
@@ -340,7 +292,56 @@ public class NERCharacterME implements NERCharacter{
 	 */
 	@Override
 	public String[] ner(String[] sentence) {
-		return tag(sentence);
+		String[] tags = this.tag(sentence, null);
+		String[] wordTag = NERCharacterSample.toPos(tags);
+		String[] words = NERCharacterSample.toWord(sentence, tags);
+		String[] output = new String[wordTag.length];
+		for (int i = 0; i < wordTag.length; i++) {
+			output[i] = words[i]+"/"+wordTag[i];
+		}
+        return output;
 	} 
+	
+	
+	/**
+	 * 得到命名实体识别的结果
+	 */
+	@Override
+	public String[] ner(String sentence) {
+		String[] tags = tocharacters(sentence);
+        return ner(tags);
+	}
+	/**
+	 * 读入一句生语料，进行标注，得到指定的命名实体
+	 * @param sentence 读取的生语料
+	 * @param flag 命名实体标记
+	 * @return
+	 */
+	@Override
+	public String[] ner(String sentence, String flag) {
+		String[] tags = tocharacters(sentence);
+        return ner(tags,flag);
+	}
+	/**
+	 * 读入一段单个字组成的语料,得到指定的命名实体
+	 * @param sentence 单个字组成的数组
+	 * @param flag 命名实体标记
+	 * @return
+	 */
+	@Override
+	public String[] ner(String[] sentence, String flag) {
+		String[] tags = this.tag(sentence, null);
+		String[] wordTag = NERCharacterSample.toPos(tags);
+		String[] words = NERCharacterSample.toWord(sentence, tags);
+		String[] output = new String[wordTag.length];
+		for (int i = 0; i < wordTag.length; i++) {
+			if(wordTag.equals(flag)){
+				output[i] = words[i]+"/"+wordTag[i];
+			}else{
+				output[i] = words[i]+"/"+"o";
+			}
+		}
+        return output;
+	}
 }
 

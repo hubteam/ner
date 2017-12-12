@@ -32,21 +32,18 @@ public class NERWordSampleStream extends FilterObjectStream<String,NERWordSample
 	 */	
 	public NERWordSample read() throws IOException {
 		String sentence = samples.read();
-		NERParseContext context = new NERParseContext(new NERParseWord(),sentence);
+		NERParseContext context = new NERParseContext(new NERParseWord());
 		NERWordSample sample = null;
 		if(sentence != null){
 			if(sentence.compareTo("") != 0){
 				try{
-					//System.out.println(sentences);
-					sample = context.parseWordSample();;
+					sample = context.parseWordSample(sentence);;
 				}catch(Exception e){
 					if (logger.isLoggable(Level.WARNING)) {
-						
 	                    logger.warning("Error during parsing, ignoring sentence: " + sentence);
 	                }
 					sample = new NERWordSample(new String[]{},new String[]{});
 				}
-
 				return sample;
 			}else {
 				sample = new NERWordSample(new String[]{},new String[]{});

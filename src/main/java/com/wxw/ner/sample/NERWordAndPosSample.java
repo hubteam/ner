@@ -176,14 +176,13 @@ public class NERWordAndPosSample {
 	
 	/**
      * 得到对应的分词序列
-     * @param characters 字符序列
-     * @param tagsandposesPre 字的边界_词性 这种格式组成的序列
+     * @param characters 基于字的是字符序列，如果是基于词的就是词语序列
+     * @param tagsandposesPre 字的边界_实体标记 这种格式组成的序列
      * @return
      */
 	public static String[] toWord(String[] characters, String[] tagsandposesPre) {
 		String word = new String();
         ArrayList<String> words = new ArrayList<String>();       
-        List<String> poses = new ArrayList<String>();
 		int i = 0;
 		while(i < tagsandposesPre.length){
 			if(tagsandposesPre[i].equals("o")){				
@@ -204,6 +203,46 @@ public class NERWordAndPosSample {
 		                words.add(word);
 		                word = "";
 		            }
+				i++;
+				if(i == tagsandposesPre.length){
+					break;
+				}
+			}
+		}
+        return words.toArray(new String[words.size()]);
+	}
+	
+	/**
+     * 得到对应的分词序列
+     * @param characters 词语序列
+     * @param poses 词性标记
+     * @param tagsandposesPre 字的边界_实体标记 这种格式组成的序列
+     * @return
+     */
+	public static String[] toWordAndPos(String[] characters, String[] poses, String[] tagsandposesPre) {
+		String word = new String();
+        ArrayList<String> words = new ArrayList<String>();       
+		int i = 0;
+		while(i < tagsandposesPre.length){
+			if(tagsandposesPre[i].equals("o")){				
+				while(tagsandposesPre[i].equals("o")){
+					word += characters[i]+"/"+poses[i];
+					i++;
+					if(i == tagsandposesPre.length){
+						break;
+					}
+				}
+				words.add(word);
+				word = "";
+			}else{	
+				String tag = tagsandposesPre[i].split("_")[0];
+				if (tag.equals("s") || tag.equals("e")) {
+					word += characters[i]+"/"+poses[i]; 
+					words.add(word);
+					word = ""; 
+				}else if(tag.equals("b") || tag.equals("m")){	 
+					word += characters[i]+"/"+poses[i]+" ";
+				}
 				i++;
 				if(i == tagsandposesPre.length){
 					break;
