@@ -33,13 +33,13 @@ public class NERCharacterSampleStream extends FilterObjectStream<String,NERChara
 	 */	
 	public NERCharacterSample read() throws IOException {
 		String sentence = samples.read();
-		NERParseContext context = new NERParseContext(new NERParseCharacter(),sentence);
+		NERParseContext context = new NERParseContext(new NERParseCharacter());
 		NERCharacterSample sample = null;
 		if(sentence != null){
 			if(sentence.compareTo("") != 0){
 				try{
 					//System.out.println(sentences);
-					sample = context.parseSample();;
+					sample = context.parseSample(sentence);;
 				}catch(Exception e){
 					if (logger.isLoggable(Level.WARNING)) {
 						
