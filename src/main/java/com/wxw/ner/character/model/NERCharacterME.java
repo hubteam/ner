@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wxw.namedentity.NamedEntity;
 import com.wxw.ner.character.feature.NERCharacterContextGenerator;
 import com.wxw.ner.event.NERCharacterSampleEvent;
 import com.wxw.ner.sample.FileInputStreamFactory;
@@ -157,10 +158,9 @@ public class NERCharacterME implements NERCharacter{
 	 * @param encoding 编码方式
 	 * @return
 	 */
-	public static NERCharacterModel train(File file, File modelbinaryFile, File modeltxtFile, TrainingParameters params,
+	public static NERCharacterModel train(File file, File modelbinaryFile, TrainingParameters params,
 			NERCharacterContextGenerator contextGen, String encoding) {
 		OutputStream modelOut = null;
-		PlainTextGISModelWriter modelWriter = null;
 		NERCharacterModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
@@ -169,9 +169,6 @@ public class NERCharacterME implements NERCharacter{
 			 //模型的持久化，写出的为二进制文件
             modelOut = new BufferedOutputStream(new FileOutputStream(modelbinaryFile));           
             model.serialize(modelOut);
-            //模型的写出，文本文件
-            modelWriter = new PlainTextGISModelWriter((AbstractModel) model.getNERModel(), modeltxtFile);
-            modelWriter.persist();
             return model;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -286,20 +283,59 @@ public class NERCharacterME implements NERCharacter{
     }
     
     /**
+	 * 返回一个ner实体
+	 * @param begin 开始位置
+	 * @param tags 标记序列
+	 * @param words 词语序列
+	 * @param flag 实体标记
+	 * @return
+	 */
+	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
+		NamedEntity ner = new NamedEntity();
+		for (int i = begin; i < tags.length; i++) {
+			List<String> wordStr = new ArrayList<>();
+			String word = "";
+			if(tags[i].split("_")[0].equals(flag)){
+				ner.setStart(i);
+				word += words[i];
+				wordStr.add(words[i]);
+				for (int j = i+1; j < tags.length; j++) {
+					if(tags[j].split("_")[0].equals(flag)){
+						word += words[j];
+						wordStr.add(words[j]);
+					}else{
+						ner.setString(word);
+						ner.setType(flag);
+						ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+						ner.setEnd(j-1);
+						break;
+					}
+				}
+			}
+			break;
+		}
+		return ner;
+	}
+    
+    /**
 	 * 读入一段单个字组成的语料
 	 * @param sentence 单个字组成的数组
 	 * @return
 	 */
 	@Override
-	public String[] ner(String[] sentence) {
-		String[] tags = this.tag(sentence, null);
-		String[] wordTag = NERCharacterSample.toPos(tags);
-		String[] words = NERCharacterSample.toWord(sentence, tags);
-		String[] output = new String[wordTag.length];
-		for (int i = 0; i < wordTag.length; i++) {
-			output[i] = words[i]+"/"+wordTag[i];
+	public NamedEntity[] ner(String[] sentence) {
+		String[] tags = tag(sentence,null);
+		List<NamedEntity> ners = new ArrayList<>();
+		for (int i = 0; i < tags.length; i++) {
+			if(ners.size() == 0){
+				ners.add(getNer(0,tags,sentence,tags[0].split("_")[0]));
+			}else{
+				ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags,sentence,
+						tags[ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+			}
+			i = ners.get(ners.size()-1).getEnd();
 		}
-        return output;
+ 		return ners.toArray(new NamedEntity[ners.size()]);
 	} 
 	
 	
@@ -307,7 +343,7 @@ public class NERCharacterME implements NERCharacter{
 	 * 得到命名实体识别的结果
 	 */
 	@Override
-	public String[] ner(String sentence) {
+	public NamedEntity[] ner(String sentence) {
 		String[] tags = tocharacters(sentence);
         return ner(tags);
 	}
@@ -318,7 +354,7 @@ public class NERCharacterME implements NERCharacter{
 	 * @return
 	 */
 	@Override
-	public String[] ner(String sentence, String flag) {
+	public NamedEntity[] ner(String sentence, String flag) {
 		String[] tags = tocharacters(sentence);
         return ner(tags,flag);
 	}
@@ -329,19 +365,49 @@ public class NERCharacterME implements NERCharacter{
 	 * @return
 	 */
 	@Override
-	public String[] ner(String[] sentence, String flag) {
-		String[] tags = this.tag(sentence, null);
-		String[] wordTag = NERCharacterSample.toPos(tags);
-		String[] words = NERCharacterSample.toWord(sentence, tags);
-		String[] output = new String[wordTag.length];
-		for (int i = 0; i < wordTag.length; i++) {
-			if(wordTag.equals(flag)){
-				output[i] = words[i]+"/"+wordTag[i];
+	public NamedEntity[] ner(String[] sentence, String flag) {
+		NamedEntity[] ners = ner(sentence);
+		for (int i = 0; i < ners.length; i++) {
+			if(ners[i].getType().equals(flag)){
+				
 			}else{
-				output[i] = words[i]+"/"+"o";
+				ners[i].setType("o");
 			}
 		}
-        return output;
+ 		return ners;
+	}
+	/**
+	 * 读入一句生语料，进行标注，得到最好的K个结果
+	 * @param sentence 读取的生语料
+	 * @return
+	 */
+	public NamedEntity[][] ner(int k,String sentence){
+		String[] tags = tocharacters(sentence);
+        return ner(k,tags);
+	}
+	
+	/**
+	 * 读入一段单个字组成的语料,得到最好的K个结果
+	 * @param sentence 单个字组成的数组
+	 * @return
+	 */
+	public NamedEntity[][] ner(int k,String[] sentence){
+		String[][] tags = tag(k,sentence);
+		NamedEntity[][] kners = new NamedEntity[k][];
+		for (int i = 0; i < tags.length; i++) {
+			List<NamedEntity> ners = new ArrayList<>();
+			for (int j = 0; j < tags[i].length; j++) {
+				if(ners.size() == 0){
+					ners.add(getNer(0,tags[i],sentence,tags[i][0].split("_")[0]));
+				}else{
+					ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags[i],sentence,
+							tags[i][ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+				}
+				j = ners.get(ners.size()-1).getEnd();
+			}
+			kners[i] = ners.toArray(new NamedEntity[ners.size()]);
+		}
+ 		return kners;
 	}
 }
 

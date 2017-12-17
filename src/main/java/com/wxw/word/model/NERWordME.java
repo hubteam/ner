@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wxw.namedentity.NamedEntity;
 import com.wxw.ner.event.NERWordSampleEvent;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERWordSample;
@@ -160,10 +161,9 @@ public class NERWordME implements NERWord{
 	 * @param encoding 编码方式
 	 * @return
 	 */
-	public static NERWordModel train(File file, File modelbinaryFile, File modeltxtFile, TrainingParameters params,
+	public static NERWordModel train(File file, File modelbinaryFile, TrainingParameters params,
 			NERWordContextGenerator contextGen, String encoding) {
 		OutputStream modelOut = null;
-		PlainTextGISModelWriter modelWriter = null;
 		NERWordModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
@@ -172,9 +172,6 @@ public class NERWordME implements NERWord{
 			 //模型的持久化，写出的为二进制文件
             modelOut = new BufferedOutputStream(new FileOutputStream(modelbinaryFile));           
             model.serialize(modelOut);
-            //模型的写出，文本文件
-            modelWriter = new PlainTextGISModelWriter((AbstractModel) model.getNERModel(), modeltxtFile);
-            modelWriter.persist();
             return model;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -286,7 +283,7 @@ public class NERWordME implements NERWord{
 	 * 对分词之后的句子进行命名实体识别,分词之间用空格隔开
 	 */
 	@Override
-	public String[] ner(String sentence) {
+	public NamedEntity[] ner(String sentence) {
 		String[] words = sentence.split(" ");
 		return ner(words);
 	}
@@ -295,16 +292,56 @@ public class NERWordME implements NERWord{
 	 * 对分词之后的数组进行命名实体识别
 	 */
 	@Override
-	public String[] ner(String[] words) {
+	public NamedEntity[] ner(String[] words) {
 		String[] tags = tag(words,null);
-		String[] nerwords = NERWordSample.toWord(words, tags);
-		String[] nertags = NERWordSample.toPos(tags);
-		String[] output = new String[nerwords.length];
-		for (int i = 0; i < nerwords.length; i++) {
-			output[i] = nerwords[i]+"/"+nertags[i];
+		List<NamedEntity> ners = new ArrayList<>();
+		for (int i = 0; i < tags.length; i++) {
+			if(ners.size() == 0){
+				ners.add(getNer(0,tags,words,tags[0].split("_")[0]));
+			}else{
+				ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags,words,
+						tags[ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+			}
+			i = ners.get(ners.size()-1).getEnd();
 		}
- 		return output;
+ 		return ners.toArray(new NamedEntity[ners.size()]);
 	}
+	
+	/**
+	 * 返回一个ner实体
+	 * @param begin 开始位置
+	 * @param tags 标记序列
+	 * @param words 词语序列
+	 * @param flag 实体标记
+	 * @return
+	 */
+	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
+		NamedEntity ner = new NamedEntity();
+		for (int i = begin; i < tags.length; i++) {
+			List<String> wordStr = new ArrayList<>();
+			String word = "";
+			if(tags[i].split("_")[0].equals(flag)){
+				ner.setStart(i);
+				word += words[i];
+				wordStr.add(words[i]);
+				for (int j = i+1; j < tags.length; j++) {
+					if(tags[j].split("_")[0].equals(flag)){
+						word += words[j];
+						wordStr.add(words[j]);
+					}else{
+						ner.setString(word);
+						ner.setType(flag);
+						ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+						ner.setEnd(j-1);
+						break;
+					}
+				}
+			}
+			break;
+		}
+		return ner;
+	}
+	
 	/**
 	 * 读入一句分词的语料，得到指定的命名实体
 	 * @param sentence 读取的分词的语料
@@ -312,7 +349,7 @@ public class NERWordME implements NERWord{
 	 * @return
 	 */
 	@Override
-	public String[] ner(String sentence, String flag) {
+	public NamedEntity[] ner(String sentence, String flag) {
 		String[] words = sentence.split(" ");
 		return ner(words,flag);
 	}
@@ -323,18 +360,49 @@ public class NERWordME implements NERWord{
 	 * @return
 	 */
 	@Override
-	public String[] ner(String[] words, String flag) {
-		String[] tags = tag(words,null);
-		String[] nerwords = NERWordSample.toWord(words, tags);
-		String[] nertags = NERWordSample.toPos(tags);
-		String[] output = new String[nerwords.length];
-		for (int i = 0; i < nerwords.length; i++) {
-			if(nertags[i].equals(flag)){
-				output[i] = nerwords[i]+"/"+nertags[i];
+	public NamedEntity[] ner(String[] words, String flag) {
+		NamedEntity[] ners = ner(words);
+		for (int i = 0; i < ners.length; i++) {
+			if(ners[i].getType().equals(flag)){
+				
 			}else{
-				output[i] = nerwords[i]+"/"+"o";
+				ners[i].setType("o");
 			}
 		}
- 		return output;
+ 		return ners;
+	}
+	
+	/**
+	 * 读入一句分词的语料，得到最好的K个结果
+	 * @param sentence 读取的分词的语料
+	 * @return
+	 */
+	public NamedEntity[][] ner(int k,String sentence){
+		String[] words = sentence.split(" ");
+		return ner(k,words);
+	}
+	
+	/**
+	 * 读入分词的语料，得到最好的K个命名实体
+	 * @param words 词语
+	 * @return
+	 */
+	public NamedEntity[][] ner(int k,String[] words){
+		String[][] tags = tag(k,words);
+		NamedEntity[][] kners = new NamedEntity[k][];
+		for (int i = 0; i < tags.length; i++) {
+			List<NamedEntity> ners = new ArrayList<>();
+			for (int j = 0; j < tags[i].length; j++) {
+				if(ners.size() == 0){
+					ners.add(getNer(0,tags[i],words,tags[i][0].split("_")[0]));
+				}else{
+					ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags[i],words,
+							tags[i][ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+				}
+				j = ners.get(ners.size()-1).getEnd();
+			}
+			kners[i] = ners.toArray(new NamedEntity[ners.size()]);
+		}
+ 		return kners;
 	}
 }

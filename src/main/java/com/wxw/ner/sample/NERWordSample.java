@@ -247,7 +247,6 @@ public class NERWordSample {
 	public String[] toWord(List<String> characters, List<String> tagsandposesPre) {
 		String word = new String();
         ArrayList<String> words = new ArrayList<String>();       
-        List<String> poses = new ArrayList<String>();
         String[] character = characters.toArray(new String[characters.size()]);
         String[] tagandposPre = tagsandposesPre.toArray(new String[tagsandposesPre.size()]);
 		int i = 0;

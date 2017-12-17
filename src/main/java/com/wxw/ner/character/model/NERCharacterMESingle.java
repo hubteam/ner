@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wxw.namedentity.NamedEntity;
 import com.wxw.ner.character.feature.NERCharacterContextGenerator;
 import com.wxw.ner.event.NERCharacterSampleEvent;
 import com.wxw.ner.sample.FileInputStreamFactory;
@@ -252,29 +253,28 @@ public class NERCharacterMESingle implements NERCharacterSingle{
       * @return
 	  */		
 	@Override	
-	public String[] ner(String[] sentence,String flag) {		
-		String[] tags = this.tag(sentence, null);			
-		String[] wordTag = NERCharacterSample.toPos(tags);			
-		String[] words = NERCharacterSample.toWord(sentence, tags);			
-		String[] output = new String[wordTag.length];			
-		for (int i = 0; i < wordTag.length; i++) {	
-			if(wordTag.equals("flag")){
-				output[i] = words[i]+"/"+wordTag[i];
+	public NamedEntity[] ner(String[] sentence,String flag) {		
+		String[] tags = tag(sentence,null);
+		List<NamedEntity> ners = new ArrayList<>();
+		for (int i = 0; i < tags.length; i++) {
+			if(ners.size() == 0){
+				ners.add(getNer(0,tags,sentence,tags[0].split("_")[0]));
 			}else{
-				output[i] = words[i]+"/"+"o";
+				ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags,sentence,
+						tags[ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
 			}
+			i = ners.get(ners.size()-1).getEnd();
 		}
-		return output;
+ 		return ners.toArray(new NamedEntity[ners.size()]);
 	} 
 		
 	/**
 	 * 得到命名实体识别的结果
 	 */
 	@Override
-	public String[] ner(String sentence,String flag) {	
+	public NamedEntity[] ner(String sentence,String flag) {	
 		String[] tags = tocharacters(sentence);   
 		return ner(tags,flag);
-		
 	}
 	
 	/**
@@ -288,7 +288,41 @@ public class NERCharacterMESingle implements NERCharacterSingle{
 			chars[i] = sentence.charAt(i) + "";	        
 		}	        
 		return chars;
-
+	}
+	
+	/**
+	 * 返回一个ner实体
+	 * @param begin 开始位置
+	 * @param tags 标记序列
+	 * @param words 词语序列
+	 * @param flag 实体标记
+	 * @return
+	 */
+	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
+		NamedEntity ner = new NamedEntity();
+		for (int i = begin; i < tags.length; i++) {
+			List<String> wordStr = new ArrayList<>();
+			String word = "";
+			if(tags[i].split("_")[0].equals(flag)){
+				ner.setStart(i);
+				word += words[i];
+				wordStr.add(words[i]);
+				for (int j = i+1; j < tags.length; j++) {
+					if(tags[j].split("_")[0].equals(flag)){
+						word += words[j];
+						wordStr.add(words[j]);
+					}else{
+						ner.setString(word);
+						ner.setType(flag);
+						ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+						ner.setEnd(j-1);
+						break;
+					}
+				}
+			}
+			break;
+		}
+		return ner;
 	}
 }
 

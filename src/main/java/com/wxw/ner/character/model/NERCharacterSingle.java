@@ -1,5 +1,7 @@
 package com.wxw.ner.character.model;
 
+import com.wxw.namedentity.NamedEntity;
+
 /**
  * 基于字的,一次只训练一种命名实体的命名实体标注器
  * @author 王馨苇
@@ -13,7 +15,7 @@ public interface NERCharacterSingle {
 	 * @param nerflag 命名实体类型
 	 * @return
 	 */
-	public String[] ner(String sentence, String nerflag);
+	public NamedEntity[] ner(String sentence, String nerflag);
 	
 	/**
 	 * 读入一段单个字组成的语料
@@ -21,5 +23,5 @@ public interface NERCharacterSingle {
 	 * @param nerflag 命名实体类型
 	 * @return
 	 */
-	public String[] ner(String[] sentence, String nerflag);
+	public NamedEntity[] ner(String[] sentence, String nerflag);
 }

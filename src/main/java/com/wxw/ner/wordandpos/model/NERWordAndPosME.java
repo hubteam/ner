@@ -15,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import com.wxw.namedentity.NamedEntity;
 import com.wxw.ner.event.NERWordAndPosSampleEvent;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERWordAndPosSample;
@@ -162,10 +163,9 @@ public class NERWordAndPosME implements NERWordAndPos{
 	 * @param encoding 编码方式
 	 * @return
 	 */
-	public static NERWordAndPosModel train(File file, File modelbinaryFile, File modeltxtFile, TrainingParameters params,
+	public static NERWordAndPosModel train(File file, File modelbinaryFile, TrainingParameters params,
 			NERWordAndPosContextGenerator contextGen, String encoding) {
 		OutputStream modelOut = null;
-		PlainTextGISModelWriter modelWriter = null;
 		NERWordAndPosModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
@@ -174,9 +174,6 @@ public class NERWordAndPosME implements NERWordAndPos{
 			 //模型的持久化，写出的为二进制文件
             modelOut = new BufferedOutputStream(new FileOutputStream(modelbinaryFile));           
             model.serialize(modelOut);
-            //模型的写出，文本文件
-            modelWriter = new PlainTextGISModelWriter((AbstractModel) model.getNERModel(), modeltxtFile);
-            modelWriter.persist();
             return model;
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -340,12 +337,47 @@ public class NERWordAndPosME implements NERWordAndPos{
     }
     
     /**
+	 * 返回一个ner实体
+	 * @param begin 开始位置
+	 * @param tags 标记序列
+	 * @param words 词语序列
+	 * @param flag 实体标记
+	 * @return
+	 */
+	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
+		NamedEntity ner = new NamedEntity();
+		for (int i = begin; i < tags.length; i++) {
+			List<String> wordStr = new ArrayList<>();
+			String word = "";
+			if(tags[i].split("_")[0].equals(flag)){
+				ner.setStart(i);
+				word += words[i];
+				wordStr.add(words[i]);
+				for (int j = i+1; j < tags.length; j++) {
+					if(tags[j].split("_")[0].equals(flag)){
+						word += words[j];
+						wordStr.add(words[j]);
+					}else{
+						ner.setString(word);
+						ner.setType(flag);
+						ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+						ner.setEnd(j-1);
+						break;
+					}
+				}
+			}
+			break;
+		}
+		return ner;
+	}
+    
+    /**
 	 * 读入一句词性标注的语料，得到最终结果
 	 * @param sentence 读取的生语料
 	 * @return
 	 */
 	@Override
-	public String[] ner(String sentence) {
+	public NamedEntity[] ner(String sentence) {
 		String[] str = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
 		List<String> words = new ArrayList<>();
 		List<String> tags = new ArrayList<>();
@@ -365,15 +397,19 @@ public class NERWordAndPosME implements NERWordAndPos{
 	 * @return
 	 */
 	@Override
-	public String[] ner(String[] words, String[] poses) {
+	public NamedEntity[] ner(String[] words, String[] poses) {
 		String[] tags = tag(words,poses,null);
-		String[] ner = NERWordAndPosSample.toPos(tags);
-		String[] word = NERWordAndPosSample.toWordAndPos(words,poses,tags);
-		String[] output = null;;
-		for (int i = 0; i < ner.length; i++) {
-			output[i] = "["+word[i]+"]"+ner[i];
+		List<NamedEntity> ners = new ArrayList<>();
+		for (int i = 0; i < tags.length; i++) {
+			if(ners.size() == 0){
+				ners.add(getNer(0,tags,words,tags[0].split("_")[0]));
+			}else{
+				ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags,words,
+						tags[ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+			}
+			i = ners.get(ners.size()-1).getEnd();
 		}
-		return output;
+ 		return ners.toArray(new NamedEntity[ners.size()]);
 	}
 	
 	/**
@@ -383,7 +419,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 	 * @return
 	 */
 	@Override
-	public String[] ner(String sentence, String flag) {
+	public NamedEntity[] ner(String sentence, String flag) {
 		String[] str = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
 		List<String> words = new ArrayList<>();
 		List<String> tags = new ArrayList<>();
@@ -405,19 +441,60 @@ public class NERWordAndPosME implements NERWordAndPos{
 	 * @return
 	 */
 	@Override
-	public String[] ner(String[] words, String[] poses, String flag) {
-		String[] tags = tag(words,poses,null);
-		String[] ner = NERWordAndPosSample.toPos(tags);
-		String[] word = NERWordAndPosSample.toWordAndPos(words,poses,tags);
-		String[] output = null;;
-		for (int i = 0; i < ner.length; i++) {
-			if(ner[i].equals(flag)){
-				output[i] = "["+word[i]+"]"+ner[i];
+	public NamedEntity[] ner(String[] words, String[] poses, String flag) {
+		NamedEntity[] ners = ner(words,poses);
+		for (int i = 0; i < ners.length; i++) {
+			if(ners[i].getType().equals(flag)){
+				
 			}else{
-				output[i] = "["+word[i]+"]"+"o";
+				ners[i].setType("o");
 			}
 		}
-		return output;
+ 		return ners;
+	}
+	
+	/**
+	 * 读入一句词性标注的语料，得到最终结果
+	 * @param sentence 读取的词性标注的语料
+	 * @return
+	 */
+	public NamedEntity[][] ner(int k,String sentence){
+		String[] str = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
+		List<String> words = new ArrayList<>();
+		List<String> tags = new ArrayList<>();
+		for (int i = 0; i < str.length; i++) {
+			String word = str[i].split("/")[0];
+			String tag = str[i].split("/")[1];
+			words.add(word);
+			tags.add(tag);
+		}
+		return ner(k,words.toArray(new String[words.size()]),
+				tags.toArray(new String[tags.size()]));
+	}
+	
+	/**
+	 * 读入词性标注的语料，得到命名实体
+	 * @param words 词语
+	 * @param poses 词性
+	 * @return
+	 */
+	public NamedEntity[][] ner(int k,String[] words,String[] poses){
+		String[][] tags = tag(k,words,poses);
+		NamedEntity[][] kners = new NamedEntity[k][];
+		for (int i = 0; i < tags.length; i++) {
+			List<NamedEntity> ners = new ArrayList<>();
+			for (int j = 0; j < tags[i].length; j++) {
+				if(ners.size() == 0){
+					ners.add(getNer(0,tags[i],words,tags[i][0].split("_")[0]));
+				}else{
+					ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags[i],words,
+							tags[i][ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+				}
+				j = ners.get(ners.size()-1).getEnd();
+			}
+			kners[i] = ners.toArray(new NamedEntity[ners.size()]);
+		}
+ 		return kners;
 	}
 }
 
