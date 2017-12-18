@@ -2,6 +2,7 @@ package com.wxw.word.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
@@ -29,9 +30,12 @@ public class NERWordModel extends BaseModel{
 	 */
 	protected NERWordModel(String componentName, File modelFile) throws IOException {
 		super(COMPONENT_NAME, modelFile);
-		
 	}
 
+	public NERWordModel(InputStream modelFile) throws IOException {
+		super(COMPONENT_NAME, modelFile);
+	}
+	
 	/**
 	 * 构造
 	 * @param languageCode 编码

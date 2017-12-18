@@ -12,9 +12,10 @@ import com.wxw.ner.character.feature.NERCharacterContextGeneratorConf;
 import com.wxw.ner.character.model.NERCharacterMESingle;
 import com.wxw.ner.character.model.NERCharacterModel;
 import com.wxw.ner.crossvalidation.NERCharacterCrossValidation;
-import com.wxw.ner.error.NERCharacterErrorPrinter;
+import com.wxw.ner.error.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.evaluate.NERCharacterEvaluator;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERCharacterSample;
 import com.wxw.ner.sample.NERCharacterSampleStreamSingle;
@@ -81,7 +82,7 @@ public class NERCharacterRunSingle {
         NERCharacterContextGenerator contextGen = getContextGenerator(config);
         ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
         
-        ObjectStream<NERCharacterSample> sampleStream = new NERCharacterSampleStreamSingle(lineStream);
+        ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStreamSingle(lineStream);
 
         //默认参数
         TrainingParameters params = TrainingParameters.defaultParams();
@@ -175,17 +176,17 @@ public class NERCharacterRunSingle {
        
         NERMeasure measure = new NERMeasure();
         NERCharacterEvaluator evaluator = null;
-        NERCharacterErrorPrinter printer = null;
+        NERErrorPrinter printer = null;
         if(corpus.errorFile != null){
         	System.out.println("Print error to file " + corpus.errorFile);
-        	printer = new NERCharacterErrorPrinter(new FileOutputStream(corpus.errorFile));    	
+        	printer = new NERErrorPrinter(new FileOutputStream(corpus.errorFile));    	
         	evaluator = new NERCharacterEvaluator(tagger,printer);
         }else{
         	evaluator = new NERCharacterEvaluator(tagger);
         }
         evaluator.setMeasure(measure);
         ObjectStream<String> linesStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
-        ObjectStream<NERCharacterSample> sampleStream = new NERCharacterSampleStreamSingle(linesStream);
+        ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStreamSingle(linesStream);
         evaluator.evaluate(sampleStream);
         NERMeasure measureRes = evaluator.getMeasure();
         System.out.println("--------结果--------");

@@ -2,6 +2,7 @@ package com.wxw.ner.wordandpos.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
@@ -28,9 +29,13 @@ public class NERWordAndPosModel extends BaseModel{
 	 */
 	protected NERWordAndPosModel(String componentName, File modelFile) throws IOException {
 		super(COMPONENT_NAME, modelFile);
-		
 	}
 
+	public NERWordAndPosModel(InputStream modelFile) throws IOException {
+		super(COMPONENT_NAME, modelFile);
+	}
+
+	
 	/**
 	 * 构造
 	 * @param languageCode 编码

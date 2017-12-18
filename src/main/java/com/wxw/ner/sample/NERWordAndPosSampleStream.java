@@ -16,7 +16,7 @@ import opennlp.tools.util.ObjectStream;
  * @author 王馨苇
  *
  */
-public class NERWordAndPosSampleStream extends FilterObjectStream<String,NERWordAndPosSample>{
+public class NERWordAndPosSampleStream extends FilterObjectStream<String,AbstractNERSample>{
 
 	private static Logger logger = Logger.getLogger(NERWordAndPosSampleStream.class.getName());
 	/**
@@ -31,7 +31,7 @@ public class NERWordAndPosSampleStream extends FilterObjectStream<String,NERWord
 	 * 读取样本进行解析
 	 * @return 
 	 */	
-	public NERWordAndPosSample read() throws IOException {
+	public AbstractNERSample read() throws IOException {
 		String sentence = samples.read();
 		NERParseContext context = new NERParseContext(new NERParseWordAndPos());
 		NERWordAndPosSample sample = null;

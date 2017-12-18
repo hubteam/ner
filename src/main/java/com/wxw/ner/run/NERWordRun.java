@@ -1,16 +1,19 @@
 package com.wxw.ner.run;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import com.wxw.ner.character.model.NERCharacterModel;
 import com.wxw.ner.crossvalidation.NERWordCrossValidation;
-import com.wxw.ner.error.NERWordErrorPrinter;
+import com.wxw.ner.error.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.evaluate.NERWordEvaluator;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERWordSample;
 import com.wxw.ner.sample.NERWordSampleStream;
@@ -76,7 +79,7 @@ public class NERWordRun {
         NERWordContextGenerator contextGen = getContextGenerator(config);
         ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
         
-        ObjectStream<NERWordSample> sampleStream = new NERWordSampleStream(lineStream);
+        ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(lineStream);
 
         //默认参数
         TrainingParameters params = TrainingParameters.defaultParams();
@@ -159,28 +162,24 @@ public class NERWordRun {
 	private static void evaluateOnCorpus(NERWordContextGenerator contextGen, Corpus corpus,
 			TrainingParameters params) throws IOException {
 		System.out.println("ContextGenerator: " + contextGen);
+		InputStream modelIn = new FileInputStream(new File(corpus.modelbinaryFile));
+        NERWordModel model = new NERWordModel(modelIn);
 
-        System.out.println("Reading on " + corpus.name + "...");
-        NERWordModel model = NERWordME.readModel(new File(corpus.modeltxtFile), params, contextGen, corpus.encoding);
-  
-        System.out.println("Building dictionary on " + corpus.name + "...");
-      
-        
         NERWordME tagger = new NERWordME(model,contextGen);
        
         NERMeasure measure = new NERMeasure();
         NERWordEvaluator evaluator = null;
-        NERWordErrorPrinter printer = null;
+        NERErrorPrinter printer = null;
         if(corpus.errorFile != null){
         	System.out.println("Print error to file " + corpus.errorFile);
-        	printer = new NERWordErrorPrinter(new FileOutputStream(corpus.errorFile));    	
+        	printer = new NERErrorPrinter(new FileOutputStream(corpus.errorFile));    	
         	evaluator = new NERWordEvaluator(tagger,printer);
         }else{
         	evaluator = new NERWordEvaluator(tagger);
         }
         evaluator.setMeasure(measure);
         ObjectStream<String> linesStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
-        ObjectStream<NERWordSample> sampleStream = new NERWordSampleStream(linesStream);
+        ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(linesStream);
         evaluator.evaluate(sampleStream);
         NERMeasure measureRes = evaluator.getMeasure();
         System.out.println("--------结果--------");
@@ -201,7 +200,7 @@ public class NERWordRun {
 		System.out.println("ContextGenerator: " + contextGen);
         System.out.println("Training on " + corpus.name + "...");
         //训练模型
-        NERWordME.train(new File(corpus.trainFile), new File(corpus.modelbinaryFile), new File(corpus.modeltxtFile), params, contextGen, corpus.encoding);
+        NERWordME.train(new File(corpus.trainFile), new File(corpus.modelbinaryFile), params, contextGen, corpus.encoding);
 		
 	}
 

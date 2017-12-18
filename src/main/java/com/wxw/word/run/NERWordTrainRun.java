@@ -14,10 +14,10 @@ import opennlp.tools.util.TrainingParameters;
  * @author 王馨苇
  *
  */
-public class WordTrainRun {
+public class NERWordTrainRun {
 
 	private static void usage(){
-		System.out.println(WordTrainRun.class.getName()+"-data <corpusFile> -model <modelFile> -encoding"+"[-cutoff <num>] [-iters <num>]");
+		System.out.println(NERWordTrainRun.class.getName()+"-data <corpusFile> -model <modelFile> -encoding"+"[-cutoff <num>] [-iters <num>]");
 	}
 	
 	public static void main(String[] args) throws IOException {

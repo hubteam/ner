@@ -1,17 +1,16 @@
 package com.wxw.ner.evaluate;
 
-import com.wxw.ner.sample.NERCharacterSample;
-
+import com.wxw.ner.sample.AbstractNERSample;
 import opennlp.tools.util.eval.EvaluationMonitor;
 
-public class NERCharacterEvaluateMonitor implements EvaluationMonitor<NERCharacterSample>{
+public class NEREvaluateMonitor implements EvaluationMonitor<AbstractNERSample>{
 
 	/**
 	 * 预测正确的时候执行
 	 * @param arg0 参考的结果
 	 * @param arg1 预测的结果
 	 */
-	public void correctlyClassified(NERCharacterSample arg0, NERCharacterSample arg1) {
+	public void correctlyClassified(AbstractNERSample arg0, AbstractNERSample arg1) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -21,7 +20,7 @@ public class NERCharacterEvaluateMonitor implements EvaluationMonitor<NERCharact
 	 * @param arg0 参考的结果
 	 * @param arg1 预测的结果
 	 */
-	public void missclassified(NERCharacterSample arg0, NERCharacterSample arg1) {
+	public void missclassified(AbstractNERSample arg0, AbstractNERSample arg1) {
 		// TODO Auto-generated method stub
 		
 	}

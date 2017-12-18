@@ -1,19 +1,29 @@
 package com.wxw.word.run;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
+import com.wxw.ner.error.NERErrorPrinter;
+import com.wxw.ner.evaluate.NERMeasure;
+import com.wxw.ner.evaluate.NERWordEvaluator;
+import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.FileInputStreamFactory;
+import com.wxw.ner.sample.NERWordSample;
+import com.wxw.ner.sample.NERWordSampleStream;
 import com.wxw.word.feature.NERWordContextGenerator;
 import com.wxw.word.feature.NERWordContextGeneratorConf;
 import com.wxw.word.model.NERWordME;
 import com.wxw.word.model.NERWordModel;
 
+import opennlp.tools.util.ObjectStream;
+import opennlp.tools.util.PlainTextByLineStream;
 import opennlp.tools.util.TrainingParameters;
 
-public class WordEvaluateRun {
+public class NERWordEvaluateRun {
 
 	private static void usage(){
-		System.out.println(WordEvaluateRun.class.getName() + " -data <trainFile> -gold <goldFile> -encoding <encoding> [-error <errorFile>]" + " [-cutoff <num>] [-iters <num>]");
+		System.out.println(NERWordEvaluateRun.class.getName() + " -data <trainFile> -gold <goldFile> -error <errorFile> -encoding <encoding>" + " [-cutoff <num>] [-iters <num>]");
 	}
 	
 	public static void eval(File trainFile, TrainingParameters params, File goldFile, String encoding, File errorFile) throws IOException{
@@ -21,10 +31,29 @@ public class WordEvaluateRun {
         NERWordContextGenerator contextGen = new NERWordContextGeneratorConf();
         NERWordModel model = NERWordME.train(trainFile, params, contextGen, encoding);
         System.out.println("训练时间： " + (System.currentTimeMillis() - start));
+        NERWordME tagger = new NERWordME(model,contextGen);
+        
+        NERMeasure measure = new NERMeasure();
+        NERWordEvaluator evaluator = null;
+        NERErrorPrinter printer = null;
+        if(errorFile != null){
+        	System.out.println("Print error to file " + errorFile);
+        	printer = new NERErrorPrinter(new FileOutputStream(errorFile));    	
+        	evaluator = new NERWordEvaluator(tagger,printer);
+        }else{
+        	evaluator = new NERWordEvaluator(tagger);
+        }
+        evaluator.setMeasure(measure);
+        ObjectStream<String> linesStream = new PlainTextByLineStream(new FileInputStreamFactory(goldFile), encoding);
+        ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(linesStream);
+        evaluator.evaluate(sampleStream);
+        NERMeasure measureRes = evaluator.getMeasure();
+        System.out.println("标注时间： " + (System.currentTimeMillis() - start));
+        System.out.println(measureRes);
         
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		if (args.length < 1){
             usage();
             return;
@@ -72,6 +101,12 @@ public class WordEvaluateRun {
         TrainingParameters params = TrainingParameters.defaultParams();
         params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(cutoff));
         params.put(TrainingParameters.ITERATIONS_PARAM, Integer.toString(iters));
+        if (errorFile != null)
+        {
+            eval(new File(trainFile), params, new File(goldFile), encoding, new File(errorFile));
+        }
+        else
+            eval(new File(trainFile), params, new File(goldFile), encoding, null);
 	}
 		
 }

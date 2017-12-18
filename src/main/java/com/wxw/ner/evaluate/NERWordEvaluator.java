@@ -1,8 +1,7 @@
 package com.wxw.ner.evaluate;
 
-import com.wxw.ner.sample.NERCharacterSample;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.sample.NERWordSample;
-import com.wxw.ner.wordandpos.model.NERWordAndPosME;
 import com.wxw.word.model.NERWordME;
 
 import opennlp.tools.util.eval.Evaluator;
@@ -12,7 +11,7 @@ import opennlp.tools.util.eval.Evaluator;
  * @author 王馨苇
  *
  */
-public class NERWordEvaluator extends Evaluator<NERWordSample>{
+public class NERWordEvaluator extends Evaluator<AbstractNERSample>{
 
 	private NERWordME tagger;
 	private NERMeasure measure;
@@ -30,7 +29,7 @@ public class NERWordEvaluator extends Evaluator<NERWordSample>{
 	 * @param tagger 训练得到的模型
 	 * @param evaluateMonitors 评估的监控管理器
 	 */
-	public NERWordEvaluator(NERWordME tagger,NERWordEvaluateMonitor... evaluateMonitors) {
+	public NERWordEvaluator(NERWordME tagger,NEREvaluateMonitor... evaluateMonitors) {
 		super(evaluateMonitors);
 		this.tagger = tagger;
 	}
@@ -56,29 +55,27 @@ public class NERWordEvaluator extends Evaluator<NERWordSample>{
 	 * @param reference 参考的语料
 	 */
 	@Override
-	protected NERWordSample processSample(NERWordSample sample) {
+	protected NERWordSample processSample(AbstractNERSample sample) {
 		String[] wordsRef = sample.getWords();
+		for (int i = 0; i < wordsRef.length; i++) {
+			System.out.print(wordsRef[i]+" ");
+		}
+		System.out.println();
 		String[] wordsAndtagsRef = sample.getTags();
 		String[][] acRef = sample.getAditionalContext();
 		
 		String[] wordsAndtagsPre = tagger.tag(wordsRef, acRef);
-		
-		String[] tagsRef = NERCharacterSample.toPos(wordsAndtagsRef);
-		String[] nerRef = NERCharacterSample.toWord(wordsRef, wordsAndtagsRef);
-		String[] tagsPre = NERCharacterSample.toPos(wordsAndtagsPre);
-		String[] nerPre = NERCharacterSample.toWord(wordsRef, wordsAndtagsPre);
+		for (int i = 0; i < wordsAndtagsPre.length; i++) {
+			System.out.print(wordsAndtagsPre[i]+" ");
+		}
+		System.out.println();
+		String[] tagsRef = AbstractNERSample.toNer(wordsAndtagsRef);
+		String[] nerRef = AbstractNERSample.toWord(wordsRef, wordsAndtagsRef);
+		String[] tagsPre = AbstractNERSample.toNer(wordsAndtagsPre);
+		String[] nerPre = AbstractNERSample.toWord(wordsRef, wordsAndtagsPre);
 		
 		NERWordSample prediction = new NERWordSample(wordsRef, wordsAndtagsPre);
 		measure.update(nerRef, tagsRef, nerPre, tagsPre);
-		for (int i = 0; i < tagsRef.length; i++) {
-			System.out.print(nerRef[i]+"/"+tagsRef[i]);
-		}
-		System.out.println();
-		for (int i = 0; i < tagsPre.length; i++) {
-			System.out.print(nerPre[i]+"/"+tagsPre[i]);
-		}
-		System.out.println();
-
 		return prediction;
 	}
 }

@@ -1,6 +1,7 @@
 package com.wxw.ner.run;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -12,9 +13,10 @@ import com.wxw.ner.character.feature.NERCharacterContextGeneratorConf;
 import com.wxw.ner.character.model.NERCharacterME;
 import com.wxw.ner.character.model.NERCharacterModel;
 import com.wxw.ner.crossvalidation.NERCharacterCrossValidation;
-import com.wxw.ner.error.NERCharacterErrorPrinter;
+import com.wxw.ner.error.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.evaluate.NERCharacterEvaluator;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERCharacterSample;
 import com.wxw.ner.sample.NERCharacterSampleStream;
@@ -77,7 +79,7 @@ public class NERCharacterRun {
         NERCharacterContextGenerator contextGen = getContextGenerator(config);
         ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
         
-        ObjectStream<NERCharacterSample> sampleStream = new NERCharacterSampleStream(lineStream);
+        ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStream(lineStream);
 
         //默认参数
         TrainingParameters params = TrainingParameters.defaultParams();
@@ -160,28 +162,23 @@ public class NERCharacterRun {
 	private static void evaluateOnCorpus(NERCharacterContextGenerator contextGen, Corpus corpus,
 			TrainingParameters params) throws IOException {
 		System.out.println("ContextGenerator: " + contextGen);
-
-        System.out.println("Reading on " + corpus.name + "...");
-        NERCharacterModel model = NERCharacterME.readModel(new File(corpus.modeltxtFile), params, contextGen, corpus.encoding);
-  
-        System.out.println("Building dictionary on " + corpus.name + "...");
-      
-        
+        InputStream modelIn = new FileInputStream(new File(corpus.modelbinaryFile));
+        NERCharacterModel model = new NERCharacterModel(modelIn);
         NERCharacterME tagger = new NERCharacterME(model,contextGen);
        
         NERMeasure measure = new NERMeasure();
         NERCharacterEvaluator evaluator = null;
-        NERCharacterErrorPrinter printer = null;
+        NERErrorPrinter printer = null;
         if(corpus.errorFile != null){
         	System.out.println("Print error to file " + corpus.errorFile);
-        	printer = new NERCharacterErrorPrinter(new FileOutputStream(corpus.errorFile));    	
+        	printer = new NERErrorPrinter(new FileOutputStream(corpus.errorFile));    	
         	evaluator = new NERCharacterEvaluator(tagger,printer);
         }else{
         	evaluator = new NERCharacterEvaluator(tagger);
         }
         evaluator.setMeasure(measure);
         ObjectStream<String> linesStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
-        ObjectStream<NERCharacterSample> sampleStream = new NERCharacterSampleStream(linesStream);
+        ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStream(linesStream);
         evaluator.evaluate(sampleStream);
         NERMeasure measureRes = evaluator.getMeasure();
         System.out.println("--------结果--------");
@@ -202,7 +199,7 @@ public class NERCharacterRun {
 		System.out.println("ContextGenerator: " + contextGen);
         System.out.println("Training on " + corpus.name + "...");
         //训练模型
-        NERCharacterME.train(new File(corpus.trainFile), new File(corpus.modelbinaryFile), new File(corpus.modeltxtFile), params, contextGen, corpus.encoding);
+        NERCharacterME.train(new File(corpus.trainFile), new File(corpus.modelbinaryFile), params, contextGen, corpus.encoding);
 		
 	}
 

@@ -1,20 +1,33 @@
 package com.wxw.ner.parse;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import org.junit.Before;
+import org.junit.Test;
 
 import opennlp.tools.tokenize.WhitespaceTokenizer;
 
 public class ParserTest {
 
-	static ArrayList<String> words = new ArrayList<String>();
-	static ArrayList<String> tags = new ArrayList<String>();
-    static ArrayList<String> poses = new ArrayList<String>();
-	public static void main(String[] args) {
-		String sentence = "中国/ns  南非/ns  同/d  属/v  发展中国家/l  ，/w  又/d  都/d  面临/v  着/u  发展/v  经济/n  的/u  任务/n  。/w";
-		String[] str = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
-		Queue<String> queue = new LinkedList<String>();
+	private static ArrayList<String> words = new ArrayList<String>();
+	private static ArrayList<String> tags = new ArrayList<String>();
+    private static ArrayList<String> poses = new ArrayList<String>();
+    private String sentence;
+    private String[] str;
+    private String[] wordsRef = {"中国","南非","同","属","发展中国家","，","又","都","面临","着","发展","经济","的","任务","。"};
+    private String[] posesRef = {"ns","ns","d","v","l","w","d","d","v","u","v","n","u","n","w"};
+    private String[] nersRef = {"b_ns","e_ns","o","o","o","o","o","o","o","o","o","o","o","o","o"};
+    
+    @Before
+    public void setUp(){
+
+    	sentence = "中国/ns  南非/ns  同/d  属/v  发展中国家/l  ，/w  又/d  都/d  面临/v  着/u  发展/v  经济/n  的/u  任务/n  。/w";
+    	str = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
+    	Queue<String> queue = new LinkedList<String>();
 		int i = 0;
 		String word = "";
 		String pos = "";
@@ -87,8 +100,6 @@ public class ParserTest {
 				while(pos.equals("ns")){
 					queue.offer(word);
 					poses.add(pos);
-					System.out.println(i+1);
-					System.out.println("    "+str.length);
 					if((i+1) < str.length){
 						i++;
 					}else{
@@ -138,7 +149,6 @@ public class ParserTest {
 					pos = getWordAndPos(str,i)[1];	
 				}
 				add(queue,ner);
-
 				if(i == str.length-1){
 					
 				}else{
@@ -156,10 +166,20 @@ public class ParserTest {
 				break;
 			}
 		}
-		for (int j = 0; j < words.size(); j++) {
-			System.out.println(words.get(j)+" "+poses.get(j)+" "+tags.get(j));
+    }
+   
+    @Test
+    public void test(){
+    	assertEquals(wordsRef.length,words.size());
+    	assertEquals(posesRef.length,poses.size());
+    	assertEquals(nersRef.length,tags.size());
+    	for (int i = 0; i < wordsRef.length; i++) {
+    		assertEquals(wordsRef[i],words.get(i));
+    		assertEquals(posesRef[i],poses.get(i));
+    		assertEquals(nersRef[i],tags.get(i));
 		}
-	}
+    }
+    
 	
 	public static String[] getWordAndPos(String[] str, int i){
 		String[] temp = str[i].split("/");

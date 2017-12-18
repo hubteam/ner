@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.wxw.ner.character.feature.NERCharacterContextGenerator;
-import com.wxw.ner.sample.NERCharacterSample;
+import com.wxw.ner.sample.AbstractNERSample;
 
 import opennlp.tools.ml.model.Event;
 import opennlp.tools.util.AbstractEventStream;
@@ -16,7 +16,7 @@ import opennlp.tools.util.ObjectStream;
  * @author 王馨苇
  *
  */
-public class NERCharacterSampleEvent extends AbstractEventStream<NERCharacterSample>{
+public class NERCharacterSampleEvent extends AbstractEventStream<AbstractNERSample>{
 
 	private NERCharacterContextGenerator generator;
 	
@@ -25,14 +25,14 @@ public class NERCharacterSampleEvent extends AbstractEventStream<NERCharacterSam
 	 * @param samples 样本流
 	 * @param generator 上下文产生器
 	 */
-	public NERCharacterSampleEvent(ObjectStream<NERCharacterSample> samples,NERCharacterContextGenerator generator) {
+	public NERCharacterSampleEvent(ObjectStream<AbstractNERSample> samples,NERCharacterContextGenerator generator) {
 		super(samples);
 		this.generator = generator;
 	}
 	
 	@Override
-	protected Iterator<Event> createEvents(NERCharacterSample sample) {
-		String[] words = sample.getCharacters();
+	protected Iterator<Event> createEvents(AbstractNERSample sample) {
+		String[] words = sample.getWords();
 		String[] tags = sample.getTags();
 		String[][] ac = sample.getAditionalContext();
 		List<Event> events = generateEvents(words, tags, ac);

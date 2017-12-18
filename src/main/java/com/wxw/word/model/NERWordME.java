@@ -13,8 +13,8 @@ import java.util.Map;
 
 import com.wxw.namedentity.NamedEntity;
 import com.wxw.ner.event.NERWordSampleEvent;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
-import com.wxw.ner.sample.NERWordSample;
 import com.wxw.ner.sample.NERWordSampleStream;
 import com.wxw.ner.sequence.DefaultNERWordSequenceValidator;
 import com.wxw.word.feature.NERWordContextGenerator;
@@ -24,7 +24,6 @@ import opennlp.tools.ml.EventTrainer;
 import opennlp.tools.ml.TrainerFactory;
 import opennlp.tools.ml.TrainerFactory.TrainerType;
 import opennlp.tools.ml.maxent.io.PlainTextGISModelReader;
-import opennlp.tools.ml.maxent.io.PlainTextGISModelWriter;
 import opennlp.tools.ml.model.AbstractModel;
 import opennlp.tools.ml.model.Event;
 import opennlp.tools.ml.model.MaxentModel;
@@ -53,6 +52,10 @@ public class NERWordME implements NERWord{
 
     private SequenceValidator<String> sequenceValidator;
 	
+    public NERWordME(){
+    	
+    }
+    
 	/**
 	 * 构造函数，初始化工作
 	 * @param model 模型
@@ -103,7 +106,7 @@ public class NERWordME implements NERWord{
 		NERWordModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<NERWordSample> sampleStream = new NERWordSampleStream(lineStream);
+			ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(lineStream);
 			model = NERWordME.train("zh", sampleStream, params, contextGen);
 			return model;
 		} catch (FileNotFoundException e) {
@@ -124,7 +127,7 @@ public class NERWordME implements NERWord{
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static NERWordModel train(String languageCode, ObjectStream<NERWordSample> sampleStream, TrainingParameters params,
+	public static NERWordModel train(String languageCode, ObjectStream<AbstractNERSample> sampleStream, TrainingParameters params,
 			NERWordContextGenerator contextGen) throws IOException {
 		String beamSizeString = params.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
 		int beamSize = NERWordME.DEFAULT_BEAM_SIZE;
@@ -167,7 +170,7 @@ public class NERWordME implements NERWord{
 		NERWordModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<NERWordSample> sampleStream = new NERWordSampleStream(lineStream);
+			ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(lineStream);
 			model = NERWordME.train("zh", sampleStream, params, contextGen);
 			 //模型的持久化，写出的为二进制文件
             modelOut = new BufferedOutputStream(new FileOutputStream(modelbinaryFile));           
@@ -296,38 +299,50 @@ public class NERWordME implements NERWord{
 		String[] tags = tag(words,null);
 		List<NamedEntity> ners = new ArrayList<>();
 		for (int i = 0; i < tags.length; i++) {
-			if(ners.size() == 0){
-				ners.add(getNer(0,tags,words,tags[0].split("_")[0]));
+			String flag;
+			if(tags[i].equals("o")){
+				flag = "o";
 			}else{
-				ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags,words,
-						tags[ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+				flag = tags[i].split("_")[1];
+			}
+			if(ners.size() == 0){
+				ners.add(getNer(0,tags,words,flag));
+			}else{
+				ners.add(getNer(i,tags,words,flag));
 			}
 			i = ners.get(ners.size()-1).getEnd();
 		}
  		return ners.toArray(new NamedEntity[ners.size()]);
 	}
 	
-	/**
-	 * 返回一个ner实体
-	 * @param begin 开始位置
-	 * @param tags 标记序列
-	 * @param words 词语序列
-	 * @param flag 实体标记
-	 * @return
-	 */
+	 /**
+	   * 返回一个ner实体
+	   * @param begin 开始位置
+	   * @param tags 标记序列
+	   * @param words 词语序列
+	   * @param flag 实体标记
+	   * @return
+	   */
 	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
 		NamedEntity ner = new NamedEntity();
 		for (int i = begin; i < tags.length; i++) {
 			List<String> wordStr = new ArrayList<>();
 			String word = "";
-			if(tags[i].split("_")[0].equals(flag)){
+			if(tags[i].equals(flag)){
 				ner.setStart(i);
 				word += words[i];
 				wordStr.add(words[i]);
 				for (int j = i+1; j < tags.length; j++) {
-					if(tags[j].split("_")[0].equals(flag)){
+					if(tags[j].equals(flag)){
 						word += words[j];
 						wordStr.add(words[j]);
+						if(j == tags.length-1){
+							ner.setString(word);
+							ner.setType(flag);
+							ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+							ner.setEnd(j);
+							break;
+						}
 					}else{
 						ner.setString(word);
 						ner.setType(flag);
@@ -335,6 +350,34 @@ public class NERWordME implements NERWord{
 						ner.setEnd(j-1);
 						break;
 					}
+				}
+			}else if(tags[i].split("_")[1].equals(flag) && tags[i].split("_")[0].equals("b")){
+				ner.setStart(i);
+				word += words[i];
+				wordStr.add(words[i]);
+				for (int j = i+1; j < tags.length; j++) {
+					word += words[j];
+					wordStr.add(words[j]);
+					if(tags[j].split("_")[1].equals(flag) && tags[j].split("_")[0].equals("m")){
+							
+					}else if(tags[j].split("_")[1].equals(flag) && tags[j].split("_")[0].equals("e")){
+						ner.setString(word);
+						ner.setType(flag);
+						ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+						ner.setEnd(j);
+						break;
+					}
+				}
+			}else{
+				if(tags[i].split("_")[1].equals(flag) && tags[i].split("_")[0].equals("s")){
+					ner.setStart(i);
+					word += words[i];
+					wordStr.add(words[i]);
+					ner.setString(word);
+					ner.setType(flag);
+					ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+					ner.setEnd(i);
+					break;
 				}
 			}
 			break;
@@ -393,11 +436,16 @@ public class NERWordME implements NERWord{
 		for (int i = 0; i < tags.length; i++) {
 			List<NamedEntity> ners = new ArrayList<>();
 			for (int j = 0; j < tags[i].length; j++) {
-				if(ners.size() == 0){
-					ners.add(getNer(0,tags[i],words,tags[i][0].split("_")[0]));
+				String flag;
+				if(tags[j].equals("o")){
+					flag = "o";
 				}else{
-					ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags[i],words,
-							tags[i][ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+					flag = tags[i][j].split("_")[1];
+				}
+				if(ners.size() == 0){
+					ners.add(getNer(0,tags[i],words,flag));
+				}else{
+					ners.add(getNer(j,tags[i],words,flag));
 				}
 				j = ners.get(ners.size()-1).getEnd();
 			}

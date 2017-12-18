@@ -1,6 +1,7 @@
 package com.wxw.ner.run;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,10 +12,10 @@ import java.util.List;
 import java.util.Properties;
 
 import com.wxw.ner.crossvalidation.NERWordAndPosCrossValidation;
-import com.wxw.ner.error.NERCharacterErrorPrinter;
-import com.wxw.ner.error.NERWordAndPosErrorPrinter;
+import com.wxw.ner.error.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERWordAndPosEvaluator;
 import com.wxw.ner.evaluate.NERMeasure;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERWordAndPosSample;
 import com.wxw.ner.sample.NERWordAndPosSampleStream;
@@ -23,6 +24,7 @@ import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGeneratorConf;
 import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGeneratorConfExtend;
 import com.wxw.ner.wordandpos.model.NERWordAndPosME;
 import com.wxw.ner.wordandpos.model.NERWordAndPosModel;
+import com.wxw.word.model.NERWordModel;
 
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
@@ -81,7 +83,7 @@ public class NERWordAndPosRun {
         NERWordAndPosContextGenerator contextGen = getContextGenerator(config);
         ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
         
-        ObjectStream<NERWordAndPosSample> sampleStream = new NERWordAndPosSampleStream(lineStream);
+        ObjectStream<AbstractNERSample> sampleStream = new NERWordAndPosSampleStream(lineStream);
 
         //默认参数
         TrainingParameters params = TrainingParameters.defaultParams();
@@ -164,25 +166,23 @@ public class NERWordAndPosRun {
 	private static void evaluateOnCorpus(NERWordAndPosContextGenerator contextGen, Corpus corpus,
 			TrainingParameters params) throws IOException {
 		System.out.println("ContextGenerator: " + contextGen);
-
-        System.out.println("Reading on " + corpus.name + "...");
-        NERWordAndPosModel model = NERWordAndPosME.readModel(new File(corpus.modeltxtFile), params, contextGen, corpus.encoding);     
-        
+		InputStream modelIn = new FileInputStream(new File(corpus.modelbinaryFile));
+        NERWordAndPosModel model = new NERWordAndPosModel(modelIn);
         NERWordAndPosME tagger = new NERWordAndPosME(model,contextGen);
        
         NERMeasure measure = new NERMeasure();
         NERWordAndPosEvaluator evaluator = null;
-        NERWordAndPosErrorPrinter printer = null;
+        NERErrorPrinter printer = null;
         if(corpus.errorFile != null){
         	System.out.println("Print error to file " + corpus.errorFile);
-        	printer = new NERWordAndPosErrorPrinter(new FileOutputStream(corpus.errorFile));    	
+        	printer = new NERErrorPrinter(new FileOutputStream(corpus.errorFile));    	
         	evaluator = new NERWordAndPosEvaluator(tagger,printer);
         }else{
         	evaluator = new NERWordAndPosEvaluator(tagger);
         }
         evaluator.setMeasure(measure);
         ObjectStream<String> linesStreamNoNull = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
-        ObjectStream<NERWordAndPosSample> sampleStreamNoNull = new NERWordAndPosSampleStream(linesStreamNoNull);
+        ObjectStream<AbstractNERSample> sampleStreamNoNull = new NERWordAndPosSampleStream(linesStreamNoNull);
         evaluator.evaluate(sampleStreamNoNull);
         NERMeasure measureRes = evaluator.getMeasure();
         System.out.println("--------结果--------");
@@ -203,7 +203,7 @@ public class NERWordAndPosRun {
 		System.out.println("ContextGenerator: " + contextGen);
         System.out.println("Training on " + corpus.name + "...");
         //训练模型
-        NERWordAndPosME.train(new File(corpus.trainFile), new File(corpus.modelbinaryFile), new File(corpus.modeltxtFile), params, contextGen, corpus.encoding);
+        NERWordAndPosME.train(new File(corpus.trainFile), new File(corpus.modelbinaryFile), params, contextGen, corpus.encoding);
 		
 	}
 

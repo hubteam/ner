@@ -10,7 +10,7 @@ import com.wxw.ner.parse.NERParseCharacterSingle;
 import opennlp.tools.util.FilterObjectStream;
 import opennlp.tools.util.ObjectStream;
 
-public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,NERCharacterSample>{
+public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,AbstractNERSample>{
 
 	private static Logger logger = Logger.getLogger(NERCharacterSampleStreamSingle.class.getName());
 	/**
@@ -25,7 +25,7 @@ public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,NE
 	 * 读取样本进行解析
 	 * @return 
 	 */	
-	public NERCharacterSample read() throws IOException {
+	public AbstractNERSample read() throws IOException {
 		String sentence = samples.read();
 		NERParseContext context = new NERParseContext(new NERParseCharacterSingle());
 		NERCharacterSample sample = null;

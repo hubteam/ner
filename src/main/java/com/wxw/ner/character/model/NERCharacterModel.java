@@ -2,6 +2,7 @@ package com.wxw.ner.character.model;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
@@ -27,9 +28,12 @@ public class NERCharacterModel extends BaseModel{
 	 */
 	protected NERCharacterModel(String componentName, File modelFile) throws IOException {
 		super(COMPONENT_NAME, modelFile);
-		
 	}
 
+	public NERCharacterModel(InputStream modelFile) throws IOException {
+		super(COMPONENT_NAME, modelFile);
+	}
+	
 	/**
 	 * 构造
 	 * @param languageCode 编码

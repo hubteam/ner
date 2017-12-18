@@ -2,13 +2,13 @@ package com.wxw.ner.crossvalidation;
 
 import java.io.IOException;
 
-import com.wxw.ner.evaluate.NERCharacterEvaluateMonitor;
 import com.wxw.ner.character.feature.NERCharacterContextGenerator;
 import com.wxw.ner.character.model.NERCharacterME;
 import com.wxw.ner.character.model.NERCharacterModel;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.evaluate.NERCharacterEvaluator;
-import com.wxw.ner.sample.NERCharacterSample;
+import com.wxw.ner.evaluate.NEREvaluateMonitor;
+import com.wxw.ner.sample.AbstractNERSample;
 
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
@@ -23,7 +23,7 @@ public class NERCharacterCrossValidation {
 
 	private final String languageCode;
 	private final TrainingParameters params;
-	private NERCharacterEvaluateMonitor[] monitor;
+	private NEREvaluateMonitor[] monitor;
 	
 	/**
 	 * 构造
@@ -31,7 +31,7 @@ public class NERCharacterCrossValidation {
 	 * @param params 训练的参数
 	 * @param listeners 监听器
 	 */
-	public NERCharacterCrossValidation(String languageCode,TrainingParameters params,NERCharacterEvaluateMonitor... monitor){
+	public NERCharacterCrossValidation(String languageCode,TrainingParameters params,NEREvaluateMonitor... monitor){
 		this.languageCode = languageCode;
 		this.params = params;
 		this.monitor = monitor;
@@ -44,14 +44,14 @@ public class NERCharacterCrossValidation {
 	 * @param contextGenerator 上下文
 	 * @throws IOException io异常
 	 */
-	public void evaluate(ObjectStream<NERCharacterSample> sample, int nFolds,
+	public void evaluate(ObjectStream<AbstractNERSample> sample, int nFolds,
 			NERCharacterContextGenerator contextGenerator) throws IOException{
-		CrossValidationPartitioner<NERCharacterSample> partitioner = new CrossValidationPartitioner<NERCharacterSample>(sample, nFolds);
+		CrossValidationPartitioner<AbstractNERSample> partitioner = new CrossValidationPartitioner<AbstractNERSample>(sample, nFolds);
 		int run = 1;
 		//小于折数的时候
 		while(partitioner.hasNext()){
 			System.out.println("Run"+run+"...");
-			CrossValidationPartitioner.TrainingSampleStream<NERCharacterSample> trainingSampleStream = partitioner.next();
+			CrossValidationPartitioner.TrainingSampleStream<AbstractNERSample> trainingSampleStream = partitioner.next();
 			NERCharacterModel model = NERCharacterME.train(languageCode, trainingSampleStream, params, contextGenerator);
 
 			NERCharacterEvaluator evaluator = new NERCharacterEvaluator(new NERCharacterME(model, contextGenerator), monitor);

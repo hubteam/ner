@@ -1,19 +1,11 @@
 package com.wxw.ner.crossvalidation;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 
-import com.wxw.ner.character.feature.NERCharacterContextGenerator;
-import com.wxw.ner.character.model.NERCharacterME;
-import com.wxw.ner.character.model.NERCharacterModel;
 import com.wxw.ner.evaluate.NERMeasure;
-import com.wxw.ner.evaluate.NERCharacterEvaluateMonitor;
-import com.wxw.ner.evaluate.NERCharacterEvaluator;
-import com.wxw.ner.evaluate.NERWordAndPosEvaluateMonitor;
+import com.wxw.ner.evaluate.NEREvaluateMonitor;
 import com.wxw.ner.evaluate.NERWordAndPosEvaluator;
-import com.wxw.ner.sample.NERWordAndPosSample;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGenerator;
 import com.wxw.ner.wordandpos.model.NERWordAndPosME;
 import com.wxw.ner.wordandpos.model.NERWordAndPosModel;
@@ -31,7 +23,7 @@ public class NERWordAndPosCrossValidation {
 
 	private final String languageCode;
 	private final TrainingParameters params;
-	private NERWordAndPosEvaluateMonitor[] monitor;
+	private NEREvaluateMonitor[] monitor;
 	
 	/**
 	 * 构造
@@ -39,7 +31,7 @@ public class NERWordAndPosCrossValidation {
 	 * @param params 训练的参数
 	 * @param listeners 监听器
 	 */
-	public NERWordAndPosCrossValidation(String languageCode,TrainingParameters params,NERWordAndPosEvaluateMonitor... monitor){
+	public NERWordAndPosCrossValidation(String languageCode,TrainingParameters params,NEREvaluateMonitor... monitor){
 		this.languageCode = languageCode;
 		this.params = params;
 		this.monitor = monitor;
@@ -52,15 +44,15 @@ public class NERWordAndPosCrossValidation {
 	 * @param contextGenerator 上下文
 	 * @throws IOException io异常
 	 */
-	public void evaluate(ObjectStream<NERWordAndPosSample> sample, int nFolds,
+	public void evaluate(ObjectStream<AbstractNERSample> sample, int nFolds,
 			NERWordAndPosContextGenerator contextGenerator) throws IOException{
-		CrossValidationPartitioner<NERWordAndPosSample> partitioner = new CrossValidationPartitioner<NERWordAndPosSample>(sample, nFolds);
+		CrossValidationPartitioner<AbstractNERSample> partitioner = new CrossValidationPartitioner<AbstractNERSample>(sample, nFolds);
 		
 		int run = 1;
 		//小于折数的时候
 		while(partitioner.hasNext()){
 			System.out.println("Run"+run+"...");
-			CrossValidationPartitioner.TrainingSampleStream<NERWordAndPosSample> trainingSampleStream = partitioner.next();
+			CrossValidationPartitioner.TrainingSampleStream<AbstractNERSample> trainingSampleStream = partitioner.next();
 
 			NERWordAndPosModel model = NERWordAndPosME.train(languageCode, trainingSampleStream, params, contextGenerator);
 

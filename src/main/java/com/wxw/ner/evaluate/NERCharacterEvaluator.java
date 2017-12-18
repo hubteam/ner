@@ -2,11 +2,12 @@ package com.wxw.ner.evaluate;
 
 import com.wxw.ner.character.model.NERCharacterME;
 import com.wxw.ner.character.model.NERCharacterMESingle;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.sample.NERCharacterSample;
 
 import opennlp.tools.util.eval.Evaluator;
 
-public class NERCharacterEvaluator extends Evaluator<NERCharacterSample>{
+public class NERCharacterEvaluator extends Evaluator<AbstractNERSample>{
 
 	private NERCharacterME tagger;
 	private NERCharacterMESingle taggerSingle;
@@ -25,7 +26,7 @@ public class NERCharacterEvaluator extends Evaluator<NERCharacterSample>{
 	 * @param tagger 训练得到的模型
 	 * @param evaluateMonitors 评估的监控管理器
 	 */
-	public NERCharacterEvaluator(NERCharacterME tagger,NERCharacterEvaluateMonitor... evaluateMonitors) {
+	public NERCharacterEvaluator(NERCharacterME tagger,NEREvaluateMonitor... evaluateMonitors) {
 		super(evaluateMonitors);
 		this.tagger = tagger;
 	}
@@ -43,7 +44,7 @@ public class NERCharacterEvaluator extends Evaluator<NERCharacterSample>{
 	 * @param tagger 训练得到的模型
 	 * @param evaluateMonitors 评估的监控管理器
 	 */
-	public NERCharacterEvaluator(NERCharacterMESingle taggerSingle,NERCharacterEvaluateMonitor... evaluateMonitors) {
+	public NERCharacterEvaluator(NERCharacterMESingle taggerSingle,NEREvaluateMonitor... evaluateMonitors) {
 		super(evaluateMonitors);
 		this.taggerSingle = taggerSingle;
 	}
@@ -69,40 +70,40 @@ public class NERCharacterEvaluator extends Evaluator<NERCharacterSample>{
 	 * 评估得到指标
 	 * @param reference 参考的语料
 	 */
-	protected NERCharacterSample processSample(NERCharacterSample sample) {
-		String[] charactersRef = sample.getCharacters();
+	protected NERCharacterSample processSample(AbstractNERSample sample) {
+		String[] charactersRef = sample.getWords();
 		String[] wordsAndtagsRef = sample.getTags();
 		String[][] acRef = sample.getAditionalContext();
 		
 		String[] wordsAndtagsPre = tagger.tag(charactersRef, acRef);
 		
-		String[] tagsRef = NERCharacterSample.toPos(wordsAndtagsRef);
-		String[] wordsRef = NERCharacterSample.toWord(charactersRef, wordsAndtagsRef);
-		String[] tagsPre = NERCharacterSample.toPos(wordsAndtagsPre);
-		String[] wordsPre = NERCharacterSample.toWord(charactersRef, wordsAndtagsPre);
+		String[] tagsRef = AbstractNERSample.toNer(wordsAndtagsRef);
+		String[] wordsRef = AbstractNERSample.toWord(charactersRef, wordsAndtagsRef);
+		String[] tagsPre = AbstractNERSample.toNer(wordsAndtagsPre);
+		String[] wordsPre = AbstractNERSample.toWord(charactersRef, wordsAndtagsPre);
 		
 		NERCharacterSample prediction = new NERCharacterSample(charactersRef, wordsAndtagsPre);
 		measure.update(wordsRef, tagsRef, wordsPre, tagsPre);
-		for (int i = 0; i < tagsRef.length; i++) {
-			System.out.print(wordsRef[i]+"/"+tagsRef[i]);
-		}
-		System.out.println();
-		for (int i = 0; i < wordsAndtagsPre.length; i++) {
-			System.out.print(wordsAndtagsPre[i]);
-		}
-		System.out.println();
-		for (int i = 0; i < wordsPre.length; i++) {
-			System.out.print(wordsPre[i]+" ");
-		}
-		System.out.println();
-		for (int i = 0; i < tagsPre.length; i++) {
-			System.out.print(tagsPre[i]+" ");
-		}
-		System.out.println();
-		for (int i = 0; i < tagsPre.length; i++) {
-			System.out.print(wordsPre[i]+"/"+tagsPre[i]);
-		}
-		System.out.println();
+//		for (int i = 0; i < tagsRef.length; i++) {
+//			System.out.print(wordsRef[i]+"/"+tagsRef[i]);
+//		}
+//		System.out.println();
+//		for (int i = 0; i < wordsAndtagsPre.length; i++) {
+//			System.out.print(wordsAndtagsPre[i]);
+//		}
+//		System.out.println();
+//		for (int i = 0; i < wordsPre.length; i++) {
+//			System.out.print(wordsPre[i]+" ");
+//		}
+//		System.out.println();
+//		for (int i = 0; i < tagsPre.length; i++) {
+//			System.out.print(tagsPre[i]+" ");
+//		}
+//		System.out.println();
+//		for (int i = 0; i < tagsPre.length; i++) {
+//			System.out.print(wordsPre[i]+"/"+tagsPre[i]);
+//		}
+//		System.out.println();
 
 		return prediction;
 	} 

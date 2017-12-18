@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.wxw.ner.sample.NERWordAndPosSample;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGenerator;
 
 import opennlp.tools.ml.model.Event;
@@ -16,7 +16,7 @@ import opennlp.tools.util.ObjectStream;
  * @author 王馨苇
  *
  */
-public class NERWordAndPosSampleEvent extends AbstractEventStream<NERWordAndPosSample>{
+public class NERWordAndPosSampleEvent extends AbstractEventStream<AbstractNERSample>{
 
 	private NERWordAndPosContextGenerator generator;
 	
@@ -25,13 +25,13 @@ public class NERWordAndPosSampleEvent extends AbstractEventStream<NERWordAndPosS
 	 * @param samples 样本流
 	 * @param generator 上下文产生器
 	 */
-	public NERWordAndPosSampleEvent(ObjectStream<NERWordAndPosSample> samples,NERWordAndPosContextGenerator generator) {
+	public NERWordAndPosSampleEvent(ObjectStream<AbstractNERSample> samples,NERWordAndPosContextGenerator generator) {
 		super(samples);
 		this.generator = generator;
 	}
 
 	@Override
-	protected Iterator<Event> createEvents(NERWordAndPosSample sample) {
+	protected Iterator<Event> createEvents(AbstractNERSample sample) {
 		String[] words = sample.getWords();
 		String[] poses = sample.getPoses();
 		String[] tags = sample.getTags();

@@ -9,10 +9,10 @@ import com.wxw.ner.wordandpos.model.NERWordAndPosME;
 
 import opennlp.tools.util.TrainingParameters;
 
-public class WordAndPosTrainRun {
+public class NERWordAndPosTrainRun {
 
 	private static void usage(){
-		System.out.println(WordAndPosTrainRun.class.getName()+"-data <corpusFile> -model <modelFile> -encoding"+"[-cutoff <num>] [-iters <num>]");
+		System.out.println(NERWordAndPosTrainRun.class.getName()+"-data <corpusFile> -model <modelFile> -encoding"+"[-cutoff <num>] [-iters <num>]");
 	}
 	
 	public static void main(String[] args) throws IOException {

@@ -14,6 +14,7 @@ import java.util.Map;
 import com.wxw.namedentity.NamedEntity;
 import com.wxw.ner.character.feature.NERCharacterContextGenerator;
 import com.wxw.ner.event.NERCharacterSampleEvent;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERCharacterSample;
 import com.wxw.ner.sample.NERCharacterSampleStream;
@@ -100,7 +101,7 @@ public class NERCharacterME implements NERCharacter{
 		NERCharacterModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<NERCharacterSample> sampleStream = new NERCharacterSampleStream(lineStream);
+			ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStream(lineStream);
 			model = NERCharacterME.train("zh", sampleStream, params, contextGen);
 			return model;
 		} catch (FileNotFoundException e) {
@@ -121,7 +122,7 @@ public class NERCharacterME implements NERCharacter{
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static NERCharacterModel train(String languageCode, ObjectStream<NERCharacterSample> sampleStream, TrainingParameters params,
+	public static NERCharacterModel train(String languageCode, ObjectStream<AbstractNERSample> sampleStream, TrainingParameters params,
 			NERCharacterContextGenerator contextGen) throws IOException {
 		String beamSizeString = params.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
 		int beamSize = NERCharacterME.DEFAULT_BEAM_SIZE;
@@ -164,7 +165,7 @@ public class NERCharacterME implements NERCharacter{
 		NERCharacterModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<NERCharacterSample> sampleStream = new NERCharacterSampleStream(lineStream);
+			ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStream(lineStream);
 			model = NERCharacterME.train("zh", sampleStream, params, contextGen);
 			 //模型的持久化，写出的为二进制文件
             modelOut = new BufferedOutputStream(new FileOutputStream(modelbinaryFile));           
@@ -283,26 +284,33 @@ public class NERCharacterME implements NERCharacter{
     }
     
     /**
-	 * 返回一个ner实体
-	 * @param begin 开始位置
-	 * @param tags 标记序列
-	 * @param words 词语序列
-	 * @param flag 实体标记
-	 * @return
-	 */
+	   * 返回一个ner实体
+	   * @param begin 开始位置
+	   * @param tags 标记序列
+	   * @param words 词语序列
+	   * @param flag 实体标记
+	   * @return
+	   */
 	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
 		NamedEntity ner = new NamedEntity();
 		for (int i = begin; i < tags.length; i++) {
 			List<String> wordStr = new ArrayList<>();
 			String word = "";
-			if(tags[i].split("_")[0].equals(flag)){
+			if(tags[i].equals(flag)){
 				ner.setStart(i);
 				word += words[i];
 				wordStr.add(words[i]);
 				for (int j = i+1; j < tags.length; j++) {
-					if(tags[j].split("_")[0].equals(flag)){
+					if(tags[j].equals(flag)){
 						word += words[j];
 						wordStr.add(words[j]);
+						if(j == tags.length-1){
+							ner.setString(word);
+							ner.setType(flag);
+							ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+							ner.setEnd(j);
+							break;
+						}
 					}else{
 						ner.setString(word);
 						ner.setType(flag);
@@ -311,12 +319,40 @@ public class NERCharacterME implements NERCharacter{
 						break;
 					}
 				}
+			}else if(tags[i].split("_")[1].equals(flag) && tags[i].split("_")[0].equals("b")){
+				ner.setStart(i);
+				word += words[i];
+				wordStr.add(words[i]);
+				for (int j = i+1; j < tags.length; j++) {
+					word += words[j];
+					wordStr.add(words[j]);
+					if(tags[j].split("_")[1].equals(flag) && tags[j].split("_")[0].equals("m")){
+							
+					}else if(tags[j].split("_")[1].equals(flag) && tags[j].split("_")[0].equals("e")){
+						ner.setString(word);
+						ner.setType(flag);
+						ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+						ner.setEnd(j);
+						break;
+					}
+				}
+			}else{
+				if(tags[i].split("_")[1].equals(flag) && tags[i].split("_")[0].equals("s")){
+					ner.setStart(i);
+					word += words[i];
+					wordStr.add(words[i]);
+					ner.setString(word);
+					ner.setType(flag);
+					ner.setWords(wordStr.toArray(new String[wordStr.size()]));
+					ner.setEnd(i);
+					break;
+				}
 			}
 			break;
 		}
 		return ner;
 	}
-    
+	
     /**
 	 * 读入一段单个字组成的语料
 	 * @param sentence 单个字组成的数组
@@ -327,11 +363,16 @@ public class NERCharacterME implements NERCharacter{
 		String[] tags = tag(sentence,null);
 		List<NamedEntity> ners = new ArrayList<>();
 		for (int i = 0; i < tags.length; i++) {
-			if(ners.size() == 0){
-				ners.add(getNer(0,tags,sentence,tags[0].split("_")[0]));
+			String flag;
+			if(tags[i].equals("o")){
+				flag = "o";
 			}else{
-				ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags,sentence,
-						tags[ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+				flag = tags[i].split("_")[1];
+			}
+			if(ners.size() == 0){
+				ners.add(getNer(0,tags,sentence,flag));
+			}else{
+				ners.add(getNer(i,tags,sentence,flag));
 			}
 			i = ners.get(ners.size()-1).getEnd();
 		}
@@ -397,11 +438,16 @@ public class NERCharacterME implements NERCharacter{
 		for (int i = 0; i < tags.length; i++) {
 			List<NamedEntity> ners = new ArrayList<>();
 			for (int j = 0; j < tags[i].length; j++) {
-				if(ners.size() == 0){
-					ners.add(getNer(0,tags[i],sentence,tags[i][0].split("_")[0]));
+				String flag;
+				if(tags[j].equals("o")){
+					flag = "o";
 				}else{
-					ners.add(getNer(ners.get(ners.size()-1).getEnd()+1,tags[i],sentence,
-							tags[i][ners.get(ners.size()-1).getEnd()+1].split("_")[0]));
+					flag = tags[i][j].split("_")[1];
+				}
+				if(ners.size() == 0){
+					ners.add(getNer(0,tags[i],sentence,flag));
+				}else{
+					ners.add(getNer(j,tags[i],sentence,flag));
 				}
 				j = ners.get(ners.size()-1).getEnd();
 			}

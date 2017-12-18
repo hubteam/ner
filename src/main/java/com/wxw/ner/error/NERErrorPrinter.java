@@ -3,19 +3,19 @@ package com.wxw.ner.error;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import com.wxw.ner.evaluate.NERCharacterEvaluateMonitor;
-import com.wxw.ner.sample.NERCharacterSample;
+import com.wxw.ner.evaluate.NEREvaluateMonitor;
+import com.wxw.ner.sample.AbstractNERSample;
 
 /**
  * 为基于字的命名实体识别打印错误信息类 
  * @author 王馨苇
  *
  */
-public class NERCharacterErrorPrinter extends NERCharacterEvaluateMonitor{
+public class NERErrorPrinter extends NEREvaluateMonitor{
 
 private PrintStream errOut;
 	
-	public NERCharacterErrorPrinter(OutputStream out){
+	public NERErrorPrinter(OutputStream out){
 		errOut = new PrintStream(out);
 	}
 	
@@ -25,12 +25,12 @@ private PrintStream errOut;
 	 * @param predict 预测的结果
 	 */
 	@Override
-	public void missclassified(NERCharacterSample reference, NERCharacterSample predict) {
+	public void missclassified(AbstractNERSample reference, AbstractNERSample predict) {
 		 errOut.println("样本的结果：");
-		 errOut.print(reference.toSample());
+		 errOut.print(reference);
 		 errOut.println();
 		 errOut.println("预测的结果：");
-		 errOut.print(predict.toSample());
+		 errOut.print(predict);
 		 errOut.println();
 	}
 }

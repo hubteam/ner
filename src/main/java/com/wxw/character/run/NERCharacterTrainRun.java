@@ -1,4 +1,4 @@
-package com.wxw.character;
+package com.wxw.character.run;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,9 +12,9 @@ import com.wxw.word.model.NERWordME;
 
 import opennlp.tools.util.TrainingParameters;
 
-public class CharacterTrainRun {
+public class NERCharacterTrainRun {
 	private static void usage(){
-		System.out.println(CharacterTrainRun.class.getName()+"-data <corpusFile> -model <modelFile> -encoding"+"[-cutoff <num>] [-iters <num>]");
+		System.out.println(NERCharacterTrainRun.class.getName()+"-data <corpusFile> -model <modelFile> -encoding"+"[-cutoff <num>] [-iters <num>]");
 	}
 	
 	public static void main(String[] args) throws IOException {

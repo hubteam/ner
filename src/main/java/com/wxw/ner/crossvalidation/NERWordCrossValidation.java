@@ -2,10 +2,10 @@ package com.wxw.ner.crossvalidation;
 
 import java.io.IOException;
 
+import com.wxw.ner.evaluate.NEREvaluateMonitor;
 import com.wxw.ner.evaluate.NERMeasure;
-import com.wxw.ner.evaluate.NERWordEvaluateMonitor;
 import com.wxw.ner.evaluate.NERWordEvaluator;
-import com.wxw.ner.sample.NERWordSample;
+import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.word.feature.NERWordContextGenerator;
 import com.wxw.word.model.NERWordME;
 import com.wxw.word.model.NERWordModel;
@@ -22,7 +22,7 @@ import opennlp.tools.util.eval.CrossValidationPartitioner;
 public class NERWordCrossValidation {
 	private final String languageCode;
 	private final TrainingParameters params;
-	private NERWordEvaluateMonitor[] monitor;
+	private NEREvaluateMonitor[] monitor;
 	
 	/**
 	 * 构造
@@ -30,7 +30,7 @@ public class NERWordCrossValidation {
 	 * @param params 训练的参数
 	 * @param listeners 监听器
 	 */
-	public NERWordCrossValidation(String languageCode,TrainingParameters params,NERWordEvaluateMonitor... monitor){
+	public NERWordCrossValidation(String languageCode,TrainingParameters params,NEREvaluateMonitor... monitor){
 		this.languageCode = languageCode;
 		this.params = params;
 		this.monitor = monitor;
@@ -43,14 +43,14 @@ public class NERWordCrossValidation {
 	 * @param contextGenerator 上下文
 	 * @throws IOException io异常
 	 */
-	public void evaluate(ObjectStream<NERWordSample> sample, int nFolds,
+	public void evaluate(ObjectStream<AbstractNERSample> sample, int nFolds,
 			NERWordContextGenerator contextGenerator) throws IOException{
-		CrossValidationPartitioner<NERWordSample> partitioner = new CrossValidationPartitioner<NERWordSample>(sample, nFolds);
+		CrossValidationPartitioner<AbstractNERSample> partitioner = new CrossValidationPartitioner<AbstractNERSample>(sample, nFolds);
 		int run = 1;
 		//小于折数的时候
 		while(partitioner.hasNext()){
 			System.out.println("Run"+run+"...");
-			CrossValidationPartitioner.TrainingSampleStream<NERWordSample> trainingSampleStream = partitioner.next();
+			CrossValidationPartitioner.TrainingSampleStream<AbstractNERSample> trainingSampleStream = partitioner.next();
 			
 			//训练模型
 			trainingSampleStream.reset();
