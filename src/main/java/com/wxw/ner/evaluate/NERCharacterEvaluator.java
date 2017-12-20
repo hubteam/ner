@@ -2,12 +2,11 @@ package com.wxw.ner.evaluate;
 
 import com.wxw.ner.character.model.NERCharacterME;
 import com.wxw.ner.character.model.NERCharacterMESingle;
-import com.wxw.ner.sample.AbstractNERSample;
-import com.wxw.ner.sample.NERCharacterSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 
 import opennlp.tools.util.eval.Evaluator;
 
-public class NERCharacterEvaluator extends Evaluator<AbstractNERSample>{
+public class NERCharacterEvaluator extends Evaluator<NERWordOrCharacterSample>{
 
 	private NERCharacterME tagger;
 	private NERCharacterMESingle taggerSingle;
@@ -70,19 +69,19 @@ public class NERCharacterEvaluator extends Evaluator<AbstractNERSample>{
 	 * 评估得到指标
 	 * @param reference 参考的语料
 	 */
-	protected NERCharacterSample processSample(AbstractNERSample sample) {
+	protected NERWordOrCharacterSample processSample(NERWordOrCharacterSample sample) {
 		String[] charactersRef = sample.getWords();
 		String[] wordsAndtagsRef = sample.getTags();
 		String[][] acRef = sample.getAditionalContext();
 		
 		String[] wordsAndtagsPre = tagger.tag(charactersRef, acRef);
 		
-		String[] tagsRef = AbstractNERSample.toNer(wordsAndtagsRef);
-		String[] wordsRef = AbstractNERSample.toWord(charactersRef, wordsAndtagsRef);
-		String[] tagsPre = AbstractNERSample.toNer(wordsAndtagsPre);
-		String[] wordsPre = AbstractNERSample.toWord(charactersRef, wordsAndtagsPre);
+		String[] tagsRef = NERWordOrCharacterSample.toNer(wordsAndtagsRef);
+		String[] wordsRef = NERWordOrCharacterSample.toWord(charactersRef, wordsAndtagsRef);
+		String[] tagsPre = NERWordOrCharacterSample.toNer(wordsAndtagsPre);
+		String[] wordsPre = NERWordOrCharacterSample.toWord(charactersRef, wordsAndtagsPre);
 		
-		NERCharacterSample prediction = new NERCharacterSample(charactersRef, wordsAndtagsPre);
+		NERWordOrCharacterSample prediction = new NERWordOrCharacterSample(charactersRef, wordsAndtagsPre);
 		measure.update(wordsRef, tagsRef, wordsPre, tagsPre);
 //		for (int i = 0; i < tagsRef.length; i++) {
 //			System.out.print(wordsRef[i]+"/"+tagsRef[i]);

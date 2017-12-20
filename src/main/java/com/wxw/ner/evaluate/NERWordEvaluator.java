@@ -1,7 +1,6 @@
 package com.wxw.ner.evaluate;
 
-import com.wxw.ner.sample.AbstractNERSample;
-import com.wxw.ner.sample.NERWordSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.word.model.NERWordME;
 
 import opennlp.tools.util.eval.Evaluator;
@@ -11,7 +10,7 @@ import opennlp.tools.util.eval.Evaluator;
  * @author 王馨苇
  *
  */
-public class NERWordEvaluator extends Evaluator<AbstractNERSample>{
+public class NERWordEvaluator extends Evaluator<NERWordOrCharacterSample>{
 
 	private NERWordME tagger;
 	private NERMeasure measure;
@@ -55,7 +54,7 @@ public class NERWordEvaluator extends Evaluator<AbstractNERSample>{
 	 * @param reference 参考的语料
 	 */
 	@Override
-	protected NERWordSample processSample(AbstractNERSample sample) {
+	protected NERWordOrCharacterSample processSample(NERWordOrCharacterSample sample) {
 		String[] wordsRef = sample.getWords();
 		for (int i = 0; i < wordsRef.length; i++) {
 			System.out.print(wordsRef[i]+" ");
@@ -69,12 +68,12 @@ public class NERWordEvaluator extends Evaluator<AbstractNERSample>{
 			System.out.print(wordsAndtagsPre[i]+" ");
 		}
 		System.out.println();
-		String[] tagsRef = AbstractNERSample.toNer(wordsAndtagsRef);
-		String[] nerRef = AbstractNERSample.toWord(wordsRef, wordsAndtagsRef);
-		String[] tagsPre = AbstractNERSample.toNer(wordsAndtagsPre);
-		String[] nerPre = AbstractNERSample.toWord(wordsRef, wordsAndtagsPre);
+		String[] tagsRef = NERWordOrCharacterSample.toNer(wordsAndtagsRef);
+		String[] nerRef = NERWordOrCharacterSample.toWord(wordsRef, wordsAndtagsRef);
+		String[] tagsPre = NERWordOrCharacterSample.toNer(wordsAndtagsPre);
+		String[] nerPre = NERWordOrCharacterSample.toWord(wordsRef, wordsAndtagsPre);
 		
-		NERWordSample prediction = new NERWordSample(wordsRef, wordsAndtagsPre);
+		NERWordOrCharacterSample prediction = new NERWordOrCharacterSample(wordsRef, wordsAndtagsPre);
 		measure.update(nerRef, tagsRef, nerPre, tagsPre);
 		return prediction;
 	}

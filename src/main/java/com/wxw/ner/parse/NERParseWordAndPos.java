@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.wxw.ner.sample.NERCharacterSample;
 import com.wxw.ner.sample.NERWordAndPosSample;
-import com.wxw.ner.sample.NERWordSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 
 import opennlp.tools.tokenize.WhitespaceTokenizer;
 
@@ -24,7 +23,7 @@ public class NERParseWordAndPos implements NERParseStrategy{
     /**
      * 解析语料，基于词性标注的
      */
-	public NERWordAndPosSample parseNews(String sentence) {
+	public NERWordOrCharacterSample parse(String sentence) {
 		String[] str = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
 		Queue<String> queue = new LinkedList<String>();
 		int i = 1;
@@ -219,17 +218,4 @@ public class NERParseWordAndPos implements NERParseStrategy{
 		}
 		queue.clear();
 	}
-
-	public NERCharacterSample parse(String sentence) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NERWordSample parseWord(String sentence) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
 }

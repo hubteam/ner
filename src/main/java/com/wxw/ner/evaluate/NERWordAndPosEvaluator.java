@@ -1,7 +1,7 @@
 package com.wxw.ner.evaluate;
 
-import com.wxw.ner.sample.AbstractNERSample;
 import com.wxw.ner.sample.NERWordAndPosSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.wordandpos.model.NERWordAndPosME;
 
 import opennlp.tools.util.eval.Evaluator;
@@ -11,7 +11,7 @@ import opennlp.tools.util.eval.Evaluator;
  * @author 王馨苇
  *
  */
-public class NERWordAndPosEvaluator extends Evaluator<AbstractNERSample>{
+public class NERWordAndPosEvaluator extends Evaluator<NERWordOrCharacterSample>{
 
 	private NERWordAndPosME tagger;
 	private NERMeasure measure;
@@ -56,18 +56,19 @@ public class NERWordAndPosEvaluator extends Evaluator<AbstractNERSample>{
 	 * @param reference 参考的语料
 	 */
 	@Override
-	protected NERWordAndPosSample processSample(AbstractNERSample sample) {
-		String[] charactersRef = sample.getWords();
-		String[] posRef = sample.getPoses();
-		String[] wordsAndtagsRef = sample.getTags();
-		String[][] acRef = sample.getAditionalContext();
+	protected NERWordOrCharacterSample processSample(NERWordOrCharacterSample sample) {
+		NERWordAndPosSample samples = (NERWordAndPosSample) sample;
+		String[] charactersRef = samples.getWords();
+		String[] posRef = samples.getPoses();
+		String[] wordsAndtagsRef = samples.getTags();
+		String[][] acRef = samples.getAditionalContext();
 		
 		String[] wordsAndtagsPre = tagger.tag(charactersRef, posRef, acRef);
 		
-		String[] tagsRef = AbstractNERSample.toNer(wordsAndtagsRef);
-		String[] wordsRef = AbstractNERSample.toWord(charactersRef, wordsAndtagsRef);
-		String[] tagsPre = AbstractNERSample.toNer(wordsAndtagsPre);
-		String[] wordsPre = AbstractNERSample.toWord(charactersRef, wordsAndtagsPre);
+		String[] tagsRef = NERWordOrCharacterSample.toNer(wordsAndtagsRef);
+		String[] wordsRef = NERWordOrCharacterSample.toWord(charactersRef, wordsAndtagsRef);
+		String[] tagsPre = NERWordOrCharacterSample.toNer(wordsAndtagsPre);
+		String[] wordsPre = NERWordOrCharacterSample.toWord(charactersRef, wordsAndtagsPre);
 		
 		NERWordAndPosSample prediction = new NERWordAndPosSample(charactersRef, posRef, wordsAndtagsPre);
 		measure.update(wordsRef, tagsRef, wordsPre, tagsPre);

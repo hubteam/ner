@@ -3,15 +3,13 @@ package com.wxw.ner.parse;
 import java.util.ArrayList;
 
 import com.wxw.ner.run.NERCharacterRunSingle;
-import com.wxw.ner.sample.NERCharacterSample;
-import com.wxw.ner.sample.NERWordAndPosSample;
-import com.wxw.ner.sample.NERWordSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 
 import opennlp.tools.tokenize.WhitespaceTokenizer;
 
 public class NERParseCharacterSingle implements NERParseStrategy{
 
-	public NERCharacterSample parse(String sentence) {
+	public NERWordOrCharacterSample parse(String sentence) {
 		//改进变成单个字的
 		String type = NERCharacterRunSingle.type;
 //		System.out.println(type);
@@ -61,18 +59,6 @@ public class NERParseCharacterSingle implements NERParseStrategy{
 			    		}
 			    	}	
 				}
-				return new NERCharacterSample(words,tags);
+				return new NERWordOrCharacterSample(words,tags);
 	}
-
-	public NERWordAndPosSample parseNews(String sentence) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public NERWordSample parseWord(String sentence) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

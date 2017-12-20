@@ -10,7 +10,7 @@ import com.wxw.ner.character.model.NERCharacterModel;
 import com.wxw.ner.evaluate.NERCharacterEvaluator;
 import com.wxw.ner.evaluate.NEREvaluateMonitor;
 import com.wxw.ner.evaluate.NERMeasure;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERCharacterSampleStream;
 
@@ -33,13 +33,13 @@ public class NERCharacterCrossValidationRun {
         this.listeners = listeners;
     }
     
-    public void evaluate(ObjectStream<AbstractNERSample> samples, int nFolds, NERCharacterContextGenerator contextGen) throws IOException{
-    	CrossValidationPartitioner<AbstractNERSample> partitioner = new CrossValidationPartitioner<AbstractNERSample>(samples, nFolds);
+    public void evaluate(ObjectStream<NERWordOrCharacterSample> samples, int nFolds, NERCharacterContextGenerator contextGen) throws IOException{
+    	CrossValidationPartitioner<NERWordOrCharacterSample> partitioner = new CrossValidationPartitioner<NERWordOrCharacterSample>(samples, nFolds);
 		int run = 1;
 		//小于折数的时候
 		while(partitioner.hasNext()){
 			System.out.println("Run"+run+"...");
-			CrossValidationPartitioner.TrainingSampleStream<AbstractNERSample> trainingSampleStream = partitioner.next();
+			CrossValidationPartitioner.TrainingSampleStream<NERWordOrCharacterSample> trainingSampleStream = partitioner.next();
 			
 			//训练模型
 			trainingSampleStream.reset();
@@ -109,7 +109,7 @@ public class NERCharacterCrossValidationRun {
         NERCharacterContextGenerator context = new NERCharacterContextGeneratorConf();
         System.out.println(context);
         ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(corpusFile), encoding);       
-        ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStream(lineStream);
+        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERCharacterSampleStream(lineStream);
         NERCharacterCrossValidationRun run = new NERCharacterCrossValidationRun("zh",params);
         run.evaluate(sampleStream,folds,context);
 	}

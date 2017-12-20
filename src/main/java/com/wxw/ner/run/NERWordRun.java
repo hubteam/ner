@@ -8,14 +8,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.wxw.ner.character.model.NERCharacterModel;
 import com.wxw.ner.crossvalidation.NERWordCrossValidation;
 import com.wxw.ner.error.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.evaluate.NERWordEvaluator;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
-import com.wxw.ner.sample.NERWordSample;
 import com.wxw.ner.sample.NERWordSampleStream;
 import com.wxw.word.feature.NERWordContextGenerator;
 import com.wxw.word.feature.NERWordContextGeneratorConf;
@@ -79,7 +77,7 @@ public class NERWordRun {
         NERWordContextGenerator contextGen = getContextGenerator(config);
         ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
         
-        ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(lineStream);
+        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordSampleStream(lineStream);
 
         //默认参数
         TrainingParameters params = TrainingParameters.defaultParams();
@@ -179,7 +177,7 @@ public class NERWordRun {
         }
         evaluator.setMeasure(measure);
         ObjectStream<String> linesStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
-        ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(linesStream);
+        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordSampleStream(linesStream);
         evaluator.evaluate(sampleStream);
         NERMeasure measureRes = evaluator.getMeasure();
         System.out.println("--------结果--------");

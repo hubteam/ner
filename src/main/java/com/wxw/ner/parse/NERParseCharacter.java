@@ -2,9 +2,7 @@ package com.wxw.ner.parse;
 
 import java.util.ArrayList;
 
-import com.wxw.ner.sample.NERCharacterSample;
-import com.wxw.ner.sample.NERWordAndPosSample;
-import com.wxw.ner.sample.NERWordSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 
 import opennlp.tools.tokenize.WhitespaceTokenizer;
 
@@ -18,7 +16,7 @@ public class NERParseCharacter implements NERParseStrategy{
 	/**
 	 * 解析语料，基于字的
 	 */
-	public NERCharacterSample parse(String sentence) {
+	public NERWordOrCharacterSample parse(String sentence) {
 
 		//改进变成单个字的
 		String[] wordsAndPoses = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
@@ -113,18 +111,6 @@ public class NERParseCharacter implements NERParseStrategy{
 	    		}
 	    	}	
 		}
-		return new NERCharacterSample(words,tags);
+		return new NERWordOrCharacterSample(words,tags);
 	}
-
-	public NERWordAndPosSample parseNews(String sentence) {
-	
-		return null;
-	}
-
-	@Override
-	public NERWordSample parseWord(String sentence) {
-		
-		return null;
-	}
-
 }

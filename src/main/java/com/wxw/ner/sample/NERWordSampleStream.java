@@ -15,7 +15,7 @@ import opennlp.tools.util.ObjectStream;
  * @author 王馨苇
  *
  */
-public class NERWordSampleStream extends FilterObjectStream<String,AbstractNERSample>{
+public class NERWordSampleStream extends FilterObjectStream<String,NERWordOrCharacterSample>{
 
 	private static Logger logger = Logger.getLogger(NERWordAndPosSampleStream.class.getName());
 	/**
@@ -30,23 +30,23 @@ public class NERWordSampleStream extends FilterObjectStream<String,AbstractNERSa
 	 * 读取样本进行解析
 	 * @return 
 	 */	
-	public AbstractNERSample read() throws IOException {
+	public NERWordOrCharacterSample read() throws IOException {
 		String sentence = samples.read();
 		NERParseContext context = new NERParseContext(new NERParseWord());
-		NERWordSample sample = null;
+		NERWordOrCharacterSample sample = null;
 		if(sentence != null){
 			if(sentence.compareTo("") != 0){
 				try{
-					sample = context.parseWordSample(sentence);;
+					sample = context.parseSample(sentence);;
 				}catch(Exception e){
 					if (logger.isLoggable(Level.WARNING)) {
 	                    logger.warning("Error during parsing, ignoring sentence: " + sentence);
 	                }
-					sample = new NERWordSample(new String[]{},new String[]{});
+					sample = new NERWordOrCharacterSample(new String[]{},new String[]{});
 				}
 				return sample;
 			}else {
-				sample = new NERWordSample(new String[]{},new String[]{});
+				sample = new NERWordOrCharacterSample(new String[]{},new String[]{});
 				return sample;
 			}
 		}

@@ -11,9 +11,8 @@ import com.wxw.ner.character.model.NERCharacterModel;
 import com.wxw.ner.error.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERCharacterEvaluator;
 import com.wxw.ner.evaluate.NERMeasure;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
-import com.wxw.ner.sample.NERCharacterSample;
 import com.wxw.ner.sample.NERCharacterSampleStream;
 
 import opennlp.tools.util.ObjectStream;
@@ -44,7 +43,7 @@ public class NERCharacterEvaluateRun {
         }
         evaluator.setMeasure(measure);
         ObjectStream<String> linesStream = new PlainTextByLineStream(new FileInputStreamFactory(goldFile), encoding);
-        ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStream(linesStream);
+        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERCharacterSampleStream(linesStream);
         evaluator.evaluate(sampleStream);
         NERMeasure measureRes = evaluator.getMeasure();
         System.out.println("标注时间： " + (System.currentTimeMillis() - start));

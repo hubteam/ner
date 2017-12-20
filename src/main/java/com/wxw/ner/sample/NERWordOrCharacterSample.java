@@ -5,11 +5,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public abstract class AbstractNERSample {
+public class NERWordOrCharacterSample {
 
 	public List<String> tags;
 	public List<String> words;
-	public List<String> poses;
 	private String[][] addtionalContext;
 	
 	/**
@@ -18,8 +17,8 @@ public abstract class AbstractNERSample {
 	 * @param poses 词性
 	 * @param tags 实体标记
 	 */
-	public AbstractNERSample(String[] words,String[] poses, String[] tags){
-		this(words,poses,tags,null);
+	public NERWordOrCharacterSample(String[] words,String[] tags){
+		this(words,tags,null);
 	}
 	
 	/**
@@ -28,19 +27,8 @@ public abstract class AbstractNERSample {
 	 * @param poses 词性
 	 * @param tags 实体标记
 	 */
-	public AbstractNERSample(List<String> words,List<String> poses,List<String> tags){
-		this(words,poses,tags,null);
-	}
-	
-	/**
-	 * 构造
-	 * @param words 词语
-	 * @param poses 词性
-	 * @param tags 实体标记
-	 * @param additionalContext 额外的信息
-	 */
-	public AbstractNERSample(String[] words,String[] poses, String[] tags,String[][] additionalContext){
-		this(Arrays.asList(words),Arrays.asList(poses),Arrays.asList(tags),additionalContext);
+	public NERWordOrCharacterSample(List<String> words,List<String> tags){
+		this(words,tags,null);
 	}
 	
 	/**
@@ -50,10 +38,20 @@ public abstract class AbstractNERSample {
 	 * @param tags 实体标记
 	 * @param additionalContext 额外的信息
 	 */
-    public AbstractNERSample(List<String> words,List<String> poses,List<String> tags,String[][] additionalContext){
+	public NERWordOrCharacterSample(String[] words,String[] tags,String[][] additionalContext){
+		this(Arrays.asList(words),Arrays.asList(tags),additionalContext);
+	}
+	
+	/**
+	 * 构造
+	 * @param words 词语
+	 * @param poses 词性
+	 * @param tags 实体标记
+	 * @param additionalContext 额外的信息
+	 */
+    public NERWordOrCharacterSample(List<String> words,List<String> tags,String[][] additionalContext){
         this.tags = Collections.unmodifiableList(tags);
         this.words = Collections.unmodifiableList(words);
-        this.poses = Collections.unmodifiableList(poses);
         String[][] ac;
         if (additionalContext != null) {
             ac = new String[additionalContext.length][];
@@ -75,15 +73,6 @@ public abstract class AbstractNERSample {
      */
     public String[] getWords(){
     	return this.words.toArray(new String[words.size()]);
-    }
-   
-    /**
-     * 获得词性
-     * @return
-     */
-    public String[] getPoses(){
-    	
-    	return this.poses.toArray(new String[poses.size()]);
     }
     
     /**
@@ -184,7 +173,6 @@ public abstract class AbstractNERSample {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + Arrays.deepHashCode(addtionalContext);
-		result = prime * result + ((poses == null) ? 0 : poses.hashCode());
 		result = prime * result + ((tags == null) ? 0 : tags.hashCode());
 		result = prime * result + ((words == null) ? 0 : words.hashCode());
 		return result;
@@ -198,13 +186,8 @@ public abstract class AbstractNERSample {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		AbstractNERSample other = (AbstractNERSample) obj;
+		NERWordOrCharacterSample other = (NERWordOrCharacterSample) obj;
 		if (!Arrays.deepEquals(addtionalContext, other.addtionalContext))
-			return false;
-		if (poses == null) {
-			if (other.poses != null)
-				return false;
-		} else if (!poses.equals(other.poses))
 			return false;
 		if (tags == null) {
 			if (other.tags != null)

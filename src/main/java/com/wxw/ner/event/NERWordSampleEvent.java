@@ -4,10 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.wxw.ner.sample.AbstractNERSample;
-import com.wxw.ner.sample.NERWordAndPosSample;
-import com.wxw.ner.sample.NERWordSample;
-import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGenerator;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.word.feature.NERWordContextGenerator;
 
 import opennlp.tools.ml.model.Event;
@@ -19,7 +16,7 @@ import opennlp.tools.util.ObjectStream;
  * @author 王馨苇
  *
  */
-public class NERWordSampleEvent extends AbstractEventStream<AbstractNERSample>{
+public class NERWordSampleEvent extends AbstractEventStream<NERWordOrCharacterSample>{
 
 private NERWordContextGenerator generator;
 	
@@ -28,13 +25,13 @@ private NERWordContextGenerator generator;
 	 * @param samples 样本流
 	 * @param generator 上下文产生器
 	 */
-	public NERWordSampleEvent(ObjectStream<AbstractNERSample> samples,NERWordContextGenerator generator) {
+	public NERWordSampleEvent(ObjectStream<NERWordOrCharacterSample> samples,NERWordContextGenerator generator) {
 		super(samples);
 		this.generator = generator;
 	}
 
 	@Override
-	protected Iterator<Event> createEvents(AbstractNERSample sample) {
+	protected Iterator<Event> createEvents(NERWordOrCharacterSample sample) {
 		String[] words = sample.getWords();
 		String[] tags = sample.getTags();
 		String[][] ac = sample.getAditionalContext();

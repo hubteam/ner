@@ -4,7 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordAndPosSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGenerator;
 
 import opennlp.tools.ml.model.Event;
@@ -16,7 +17,7 @@ import opennlp.tools.util.ObjectStream;
  * @author 王馨苇
  *
  */
-public class NERWordAndPosSampleEvent extends AbstractEventStream<AbstractNERSample>{
+public class NERWordAndPosSampleEvent extends AbstractEventStream<NERWordOrCharacterSample>{
 
 	private NERWordAndPosContextGenerator generator;
 	
@@ -25,17 +26,18 @@ public class NERWordAndPosSampleEvent extends AbstractEventStream<AbstractNERSam
 	 * @param samples 样本流
 	 * @param generator 上下文产生器
 	 */
-	public NERWordAndPosSampleEvent(ObjectStream<AbstractNERSample> samples,NERWordAndPosContextGenerator generator) {
+	public NERWordAndPosSampleEvent(ObjectStream<NERWordOrCharacterSample> samples,NERWordAndPosContextGenerator generator) {
 		super(samples);
 		this.generator = generator;
 	}
 
 	@Override
-	protected Iterator<Event> createEvents(AbstractNERSample sample) {
-		String[] words = sample.getWords();
-		String[] poses = sample.getPoses();
-		String[] tags = sample.getTags();
-		String[][] ac = sample.getAditionalContext();
+	protected Iterator<Event> createEvents(NERWordOrCharacterSample sample) {
+		NERWordAndPosSample samples = (NERWordAndPosSample)sample;
+		String[] words = samples.getWords();
+		String[] poses = samples.getPoses();
+		String[] tags = samples.getTags();
+		String[][] ac = samples.getAditionalContext();
 		List<Event> events = generateEvents(words,poses, tags, ac);
         return events.iterator();
 	}

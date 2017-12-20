@@ -14,7 +14,7 @@ import java.util.Map;
 import com.wxw.namedentity.NamedEntity;
 import com.wxw.ner.character.feature.NERCharacterContextGenerator;
 import com.wxw.ner.event.NERCharacterSampleEvent;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERCharacterSampleStreamSingle;
 import com.wxw.ner.sequence.DefaultNERCharacterSequenceValidator;
@@ -103,7 +103,7 @@ public class NERCharacterMESingle implements NERCharacterSingle{
 		NERCharacterModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStreamSingle(lineStream);
+			ObjectStream<NERWordOrCharacterSample> sampleStream = new NERCharacterSampleStreamSingle(lineStream);
 			model = NERCharacterME.train("zh", sampleStream, params, contextGen);
 			return model;
 		} catch (FileNotFoundException e) {
@@ -124,7 +124,7 @@ public class NERCharacterMESingle implements NERCharacterSingle{
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static NERCharacterModel train(String languageCode, ObjectStream<AbstractNERSample> sampleStream, TrainingParameters params,
+	public static NERCharacterModel train(String languageCode, ObjectStream<NERWordOrCharacterSample> sampleStream, TrainingParameters params,
 			NERCharacterContextGenerator contextGen) throws IOException {
 		String beamSizeString = params.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
 		int beamSize = NERCharacterME.DEFAULT_BEAM_SIZE;
@@ -168,7 +168,7 @@ public class NERCharacterMESingle implements NERCharacterSingle{
 		NERCharacterModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStreamSingle(lineStream);
+			ObjectStream<NERWordOrCharacterSample> sampleStream = new NERCharacterSampleStreamSingle(lineStream);
 			model = NERCharacterME.train("zh", sampleStream, params, contextGen);
 			 //模型的持久化，写出的为二进制文件
             modelOut = new BufferedOutputStream(new FileOutputStream(modelbinaryFile));           

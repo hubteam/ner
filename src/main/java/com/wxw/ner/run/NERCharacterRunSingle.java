@@ -15,9 +15,8 @@ import com.wxw.ner.crossvalidation.NERCharacterCrossValidation;
 import com.wxw.ner.error.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.evaluate.NERCharacterEvaluator;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
-import com.wxw.ner.sample.NERCharacterSample;
 import com.wxw.ner.sample.NERCharacterSampleStreamSingle;
 
 import opennlp.tools.util.ObjectStream;
@@ -82,7 +81,7 @@ public class NERCharacterRunSingle {
         NERCharacterContextGenerator contextGen = getContextGenerator(config);
         ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.trainFile)), corpus.encoding);
         
-        ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStreamSingle(lineStream);
+        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERCharacterSampleStreamSingle(lineStream);
 
         //默认参数
         TrainingParameters params = TrainingParameters.defaultParams();
@@ -186,7 +185,7 @@ public class NERCharacterRunSingle {
         }
         evaluator.setMeasure(measure);
         ObjectStream<String> linesStream = new PlainTextByLineStream(new FileInputStreamFactory(new File(corpus.testFile)), corpus.encoding);
-        ObjectStream<AbstractNERSample> sampleStream = new NERCharacterSampleStreamSingle(linesStream);
+        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERCharacterSampleStreamSingle(linesStream);
         evaluator.evaluate(sampleStream);
         NERMeasure measureRes = evaluator.getMeasure();
         System.out.println("--------结果--------");

@@ -6,7 +6,7 @@ import java.io.IOException;
 import com.wxw.ner.evaluate.NEREvaluateMonitor;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.evaluate.NERWordAndPosEvaluator;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERWordAndPosSampleStream;
 import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGenerator;
@@ -33,13 +33,13 @@ public class NERWordAndPosCrossValidationRun {
         this.listeners = listeners;
     }
     
-    public void evaluate(ObjectStream<AbstractNERSample> samples, int nFolds, NERWordAndPosContextGenerator contextGen) throws IOException{
-    	CrossValidationPartitioner<AbstractNERSample> partitioner = new CrossValidationPartitioner<AbstractNERSample>(samples, nFolds);
+    public void evaluate(ObjectStream<NERWordOrCharacterSample> samples, int nFolds, NERWordAndPosContextGenerator contextGen) throws IOException{
+    	CrossValidationPartitioner<NERWordOrCharacterSample> partitioner = new CrossValidationPartitioner<NERWordOrCharacterSample>(samples, nFolds);
 		int run = 1;
 		//小于折数的时候
 		while(partitioner.hasNext()){
 			System.out.println("Run"+run+"...");
-			CrossValidationPartitioner.TrainingSampleStream<AbstractNERSample> trainingSampleStream = partitioner.next();			
+			CrossValidationPartitioner.TrainingSampleStream<NERWordOrCharacterSample> trainingSampleStream = partitioner.next();			
 			//训练模型
 			trainingSampleStream.reset();
 			NERWordAndPosModel model = NERWordAndPosME.train(languageCode, trainingSampleStream, params, contextGen);
@@ -105,7 +105,7 @@ public class NERWordAndPosCrossValidationRun {
         NERWordAndPosContextGenerator context = new NERWordAndPosContextGeneratorConfExtend();
         System.out.println(context);
         ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(corpusFile), encoding);       
-        ObjectStream<AbstractNERSample> sampleStream = new NERWordAndPosSampleStream(lineStream);
+        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordAndPosSampleStream(lineStream);
         NERWordAndPosCrossValidationRun run = new NERWordAndPosCrossValidationRun("zh",params);
         run.evaluate(sampleStream,folds,context);
 	}

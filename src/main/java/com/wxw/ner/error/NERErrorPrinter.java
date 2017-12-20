@@ -4,7 +4,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 
 import com.wxw.ner.evaluate.NEREvaluateMonitor;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 
 /**
  * 为基于字的命名实体识别打印错误信息类 
@@ -25,7 +25,7 @@ private PrintStream errOut;
 	 * @param predict 预测的结果
 	 */
 	@Override
-	public void missclassified(AbstractNERSample reference, AbstractNERSample predict) {
+	public void missclassified(NERWordOrCharacterSample reference, NERWordOrCharacterSample predict) {
 		 errOut.println("样本的结果：");
 		 errOut.print(reference);
 		 errOut.println();

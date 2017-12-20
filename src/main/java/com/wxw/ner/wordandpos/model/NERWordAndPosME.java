@@ -17,7 +17,7 @@ import java.util.Map;
 
 import com.wxw.namedentity.NamedEntity;
 import com.wxw.ner.event.NERWordAndPosSampleEvent;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERWordAndPosSample;
 import com.wxw.ner.sample.NERWordAndPosSampleStream;
@@ -105,7 +105,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 		NERWordAndPosModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<AbstractNERSample> sampleStream = new NERWordAndPosSampleStream(lineStream);
+			ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordAndPosSampleStream(lineStream);
 			model = NERWordAndPosME.train("zh", sampleStream, params, contextGen);
 			return model;
 		} catch (FileNotFoundException e) {
@@ -126,7 +126,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static NERWordAndPosModel train(String languageCode, ObjectStream<AbstractNERSample> sampleStream, TrainingParameters params,
+	public static NERWordAndPosModel train(String languageCode, ObjectStream<NERWordOrCharacterSample> sampleStream, TrainingParameters params,
 			NERWordAndPosContextGenerator contextGen) throws IOException {
 		String beamSizeString = params.getSettings().get(NERBeamSearch.BEAM_SIZE_PARAMETER);
 		int beamSize = NERWordAndPosME.DEFAULT_BEAM_SIZE;
@@ -169,7 +169,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 		NERWordAndPosModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<AbstractNERSample> sampleStream = new NERWordAndPosSampleStream(lineStream);
+			ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordAndPosSampleStream(lineStream);
 			model = NERWordAndPosME.train("zh", sampleStream, params, contextGen);
 			 //模型的持久化，写出的为二进制文件
             modelOut = new BufferedOutputStream(new FileOutputStream(modelbinaryFile));           

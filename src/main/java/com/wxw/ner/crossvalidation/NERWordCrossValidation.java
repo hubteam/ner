@@ -5,7 +5,7 @@ import java.io.IOException;
 import com.wxw.ner.evaluate.NEREvaluateMonitor;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.evaluate.NERWordEvaluator;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.word.feature.NERWordContextGenerator;
 import com.wxw.word.model.NERWordME;
 import com.wxw.word.model.NERWordModel;
@@ -43,14 +43,14 @@ public class NERWordCrossValidation {
 	 * @param contextGenerator 上下文
 	 * @throws IOException io异常
 	 */
-	public void evaluate(ObjectStream<AbstractNERSample> sample, int nFolds,
+	public void evaluate(ObjectStream<NERWordOrCharacterSample> sample, int nFolds,
 			NERWordContextGenerator contextGenerator) throws IOException{
-		CrossValidationPartitioner<AbstractNERSample> partitioner = new CrossValidationPartitioner<AbstractNERSample>(sample, nFolds);
+		CrossValidationPartitioner<NERWordOrCharacterSample> partitioner = new CrossValidationPartitioner<NERWordOrCharacterSample>(sample, nFolds);
 		int run = 1;
 		//小于折数的时候
 		while(partitioner.hasNext()){
 			System.out.println("Run"+run+"...");
-			CrossValidationPartitioner.TrainingSampleStream<AbstractNERSample> trainingSampleStream = partitioner.next();
+			CrossValidationPartitioner.TrainingSampleStream<NERWordOrCharacterSample> trainingSampleStream = partitioner.next();
 			
 			//训练模型
 			trainingSampleStream.reset();

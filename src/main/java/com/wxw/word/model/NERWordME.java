@@ -13,7 +13,7 @@ import java.util.Map;
 
 import com.wxw.namedentity.NamedEntity;
 import com.wxw.ner.event.NERWordSampleEvent;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERWordSampleStream;
 import com.wxw.ner.sequence.DefaultNERWordSequenceValidator;
@@ -106,7 +106,7 @@ public class NERWordME implements NERWord{
 		NERWordModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(lineStream);
+			ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordSampleStream(lineStream);
 			model = NERWordME.train("zh", sampleStream, params, contextGen);
 			return model;
 		} catch (FileNotFoundException e) {
@@ -127,7 +127,7 @@ public class NERWordME implements NERWord{
 	 * @throws IOException 
 	 * @throws FileNotFoundException 
 	 */
-	public static NERWordModel train(String languageCode, ObjectStream<AbstractNERSample> sampleStream, TrainingParameters params,
+	public static NERWordModel train(String languageCode, ObjectStream<NERWordOrCharacterSample> sampleStream, TrainingParameters params,
 			NERWordContextGenerator contextGen) throws IOException {
 		String beamSizeString = params.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
 		int beamSize = NERWordME.DEFAULT_BEAM_SIZE;
@@ -170,7 +170,7 @@ public class NERWordME implements NERWord{
 		NERWordModel model = null;
 		try {
 			ObjectStream<String> lineStream = new PlainTextByLineStream(new FileInputStreamFactory(file), encoding);
-			ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(lineStream);
+			ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordSampleStream(lineStream);
 			model = NERWordME.train("zh", sampleStream, params, contextGen);
 			 //模型的持久化，写出的为二进制文件
             modelOut = new BufferedOutputStream(new FileOutputStream(modelbinaryFile));           

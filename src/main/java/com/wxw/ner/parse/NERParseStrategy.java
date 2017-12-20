@@ -1,8 +1,6 @@
 package com.wxw.ner.parse;
 
-import com.wxw.ner.sample.NERCharacterSample;
-import com.wxw.ner.sample.NERWordAndPosSample;
-import com.wxw.ner.sample.NERWordSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 
 /**
  * 策略接口
@@ -16,17 +14,6 @@ public interface NERParseStrategy {
 	 * @param sentence
 	 * @return
 	 */
-	public NERCharacterSample parse(String sentence);
-	/**
-	 * 为基于词性标注的命名实体解析文本
-	 * @param sentence
-	 * @return
-	 */
-	public NERWordAndPosSample parseNews(String sentence);
-	/**
-	 * 为基于分词的命名实体解析文本
-	 * @param sentence
-	 * @return
-	 */
-	public NERWordSample parseWord(String sentence);
+	public NERWordOrCharacterSample parse(String sentence);
+	
 }

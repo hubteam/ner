@@ -7,9 +7,8 @@ import java.io.IOException;
 import com.wxw.ner.error.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.evaluate.NERWordEvaluator;
-import com.wxw.ner.sample.AbstractNERSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
-import com.wxw.ner.sample.NERWordSample;
 import com.wxw.ner.sample.NERWordSampleStream;
 import com.wxw.word.feature.NERWordContextGenerator;
 import com.wxw.word.feature.NERWordContextGeneratorConf;
@@ -45,7 +44,7 @@ public class NERWordEvaluateRun {
         }
         evaluator.setMeasure(measure);
         ObjectStream<String> linesStream = new PlainTextByLineStream(new FileInputStreamFactory(goldFile), encoding);
-        ObjectStream<AbstractNERSample> sampleStream = new NERWordSampleStream(linesStream);
+        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordSampleStream(linesStream);
         evaluator.evaluate(sampleStream);
         NERMeasure measureRes = evaluator.getMeasure();
         System.out.println("标注时间： " + (System.currentTimeMillis() - start));

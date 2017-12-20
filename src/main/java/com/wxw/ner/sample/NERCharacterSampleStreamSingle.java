@@ -10,7 +10,7 @@ import com.wxw.ner.parse.NERParseCharacterSingle;
 import opennlp.tools.util.FilterObjectStream;
 import opennlp.tools.util.ObjectStream;
 
-public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,AbstractNERSample>{
+public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,NERWordOrCharacterSample>{
 
 	private static Logger logger = Logger.getLogger(NERCharacterSampleStreamSingle.class.getName());
 	/**
@@ -25,10 +25,10 @@ public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,Ab
 	 * 读取样本进行解析
 	 * @return 
 	 */	
-	public AbstractNERSample read() throws IOException {
+	public NERWordOrCharacterSample read() throws IOException {
 		String sentence = samples.read();
 		NERParseContext context = new NERParseContext(new NERParseCharacterSingle());
-		NERCharacterSample sample = null;
+		NERWordOrCharacterSample sample = null;
 		if(sentence != null){
 			if(sentence.compareTo("") != 0){
 				try{
@@ -38,11 +38,11 @@ public class NERCharacterSampleStreamSingle extends FilterObjectStream<String,Ab
 						
 	                    logger.warning("Error during parsing, ignoring sentence: " + sentence);
 	                }
-					sample = new NERCharacterSample(new String[]{},new String[]{});
+					sample = new NERWordOrCharacterSample(new String[]{},new String[]{});
 				}
 				return sample;
 			}else {
-				sample = new NERCharacterSample(new String[]{},new String[]{});
+				sample = new NERWordOrCharacterSample(new String[]{},new String[]{});
 				return sample;
 			}
 		}

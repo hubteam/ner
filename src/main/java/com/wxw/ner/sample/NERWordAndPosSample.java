@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class NERWordAndPosSample extends AbstractNERSample{
+public class NERWordAndPosSample extends NERWordOrCharacterSample{
 
-	public List<String> tags;
-	public List<String> words;
 	public List<String> poses;
 	private String[][] addtionalContext;
 	
@@ -50,8 +48,14 @@ public class NERWordAndPosSample extends AbstractNERSample{
 	 * @param additionalContext 额外的信息
 	 */
     public NERWordAndPosSample(List<String> words,List<String> poses,List<String> tags,String[][] additionalContext){
-        super(words,poses,tags,additionalContext);
+        super(words,tags,additionalContext);
+        this.poses = poses;
 	}
+    
+    public String[] getPoses(){
+    	return poses.toArray(new String[poses.size()]);
+    }
+    
 	/**
 	 * 得到和输入样本一致的样式
 	 * @return

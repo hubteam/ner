@@ -1,8 +1,6 @@
 package com.wxw.ner.parse;
 
-import com.wxw.ner.sample.NERCharacterSample;
-import com.wxw.ner.sample.NERWordAndPosSample;
-import com.wxw.ner.sample.NERWordSample;
+import com.wxw.ner.sample.NERWordOrCharacterSample;
 
 /**
  * 上下文类
@@ -18,26 +16,10 @@ public class NERParseContext {
 	}
 
 	/**
-	 * 为基于字的命名实体解析文本
+	 * 命名实体解析文本
 	 * @return
 	 */
-	public NERCharacterSample parseSample(String sentence){
+	public NERWordOrCharacterSample parseSample(String sentence){
 		return strategy.parse(sentence);
-	}
-	
-	/**
-	 * 为基于词性标注的命名实体解析文本
-	 * @return
-	 */
-	public NERWordAndPosSample parseNewsSample(String sentence){
-		return strategy.parseNews(sentence);
-	}
-	
-	/**
-	 * 为基于分词的命名实体解析文本
-	 * @return
-	 */
-	public NERWordSample parseWordSample(String sentence){
-		return strategy.parseWord(sentence);
 	}
 }
