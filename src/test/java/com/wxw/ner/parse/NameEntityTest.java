@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.wxw.namedentity.NamedEntity;
-import com.wxw.word.ner.NERWordME;
+import com.wxw.word.NERWordME;
 
 /**
  * 测试得到的结果
