@@ -3,9 +3,9 @@ package com.wxw.word.run;
 import java.io.File;
 import java.io.IOException;
 
-import com.wxw.word.feature.NERWordContextGenerator;
-import com.wxw.word.feature.NERWordContextGeneratorConf;
-import com.wxw.word.model.NERWordME;
+import com.wxw.word.ner.NERWordContextGenerator;
+import com.wxw.word.ner.NERWordContextGeneratorConf;
+import com.wxw.word.ner.NERWordME;
 
 import opennlp.tools.util.TrainingParameters;
 

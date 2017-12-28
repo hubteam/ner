@@ -4,16 +4,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.wxw.ner.error.NERErrorPrinter;
+import com.wxw.ner.evaluate.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERMeasure;
-import com.wxw.ner.evaluate.NERWordEvaluator;
 import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERWordSampleStream;
-import com.wxw.word.feature.NERWordContextGenerator;
-import com.wxw.word.feature.NERWordContextGeneratorConf;
-import com.wxw.word.model.NERWordME;
-import com.wxw.word.model.NERWordModel;
+import com.wxw.word.ner.NERWordContextGenerator;
+import com.wxw.word.ner.NERWordContextGeneratorConf;
+import com.wxw.word.ner.NERWordEvaluator;
+import com.wxw.word.ner.NERWordME;
+import com.wxw.word.ner.NERWordModel;
 
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;

@@ -5,14 +5,14 @@ import java.io.IOException;
 
 import com.wxw.ner.evaluate.NEREvaluateMonitor;
 import com.wxw.ner.evaluate.NERMeasure;
-import com.wxw.ner.evaluate.NERWordAndPosEvaluator;
 import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
 import com.wxw.ner.sample.NERWordAndPosSampleStream;
-import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGenerator;
-import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGeneratorConfExtend;
-import com.wxw.ner.wordandpos.model.NERWordAndPosME;
-import com.wxw.ner.wordandpos.model.NERWordAndPosModel;
+import com.wxw.wordandpos.ner.NERWordAndPosContextGenerator;
+import com.wxw.wordandpos.ner.NERWordAndPosContextGeneratorConfExtend;
+import com.wxw.wordandpos.ner.NERWordAndPosEvaluator;
+import com.wxw.wordandpos.ner.NERWordAndPosME;
+import com.wxw.wordandpos.ner.NERWordAndPosModel;
 
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;

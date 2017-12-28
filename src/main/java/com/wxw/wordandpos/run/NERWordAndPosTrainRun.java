@@ -3,9 +3,9 @@ package com.wxw.wordandpos.run;
 import java.io.File;
 import java.io.IOException;
 
-import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGenerator;
-import com.wxw.ner.wordandpos.feature.NERWordAndPosContextGeneratorConfExtend;
-import com.wxw.ner.wordandpos.model.NERWordAndPosME;
+import com.wxw.wordandpos.ner.NERWordAndPosContextGenerator;
+import com.wxw.wordandpos.ner.NERWordAndPosContextGeneratorConfExtend;
+import com.wxw.wordandpos.ner.NERWordAndPosME;
 
 import opennlp.tools.util.TrainingParameters;
 

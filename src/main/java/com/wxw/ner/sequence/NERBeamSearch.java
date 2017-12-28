@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.PriorityQueue;
 
-import com.wxw.ner.wordandpos.feature.NERWordAndPosBeamSearchContextGenerator;
+import com.wxw.wordandpos.ner.NERWordAndPosBeamSearchContextGenerator;
 
 import opennlp.tools.ml.model.MaxentModel;
 import opennlp.tools.util.Cache;

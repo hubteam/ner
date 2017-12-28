@@ -3,16 +3,16 @@ package com.wxw.character.run;
 import java.io.File;
 import java.io.IOException;
 
-import com.wxw.ner.character.feature.NERCharacterContextGenerator;
-import com.wxw.ner.character.feature.NERCharacterContextGeneratorConf;
-import com.wxw.ner.character.model.NERCharacterME;
-import com.wxw.ner.character.model.NERCharacterModel;
-import com.wxw.ner.evaluate.NERCharacterEvaluator;
+import com.wxw.character.ner.NERCharacterContextGenerator;
+import com.wxw.character.ner.NERCharacterContextGeneratorConf;
+import com.wxw.character.ner.NERCharacterEvaluator;
+import com.wxw.character.ner.NERCharacterME;
+import com.wxw.character.ner.NERCharacterModel;
+import com.wxw.character.ner.NERCharacterSampleStream;
 import com.wxw.ner.evaluate.NEREvaluateMonitor;
 import com.wxw.ner.evaluate.NERMeasure;
 import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
-import com.wxw.ner.sample.NERCharacterSampleStream;
 
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;

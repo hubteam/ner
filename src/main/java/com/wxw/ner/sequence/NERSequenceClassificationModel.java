@@ -1,6 +1,6 @@
 package com.wxw.ner.sequence;
 
-import com.wxw.ner.wordandpos.feature.NERWordAndPosBeamSearchContextGenerator;
+import com.wxw.wordandpos.ner.NERWordAndPosBeamSearchContextGenerator;
 
 import opennlp.tools.util.Sequence;
 

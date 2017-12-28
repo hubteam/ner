@@ -3,12 +3,12 @@ package com.wxw.character.run;
 import java.io.File;
 import java.io.IOException;
 
-import com.wxw.ner.character.feature.NERCharacterContextGenerator;
-import com.wxw.ner.character.feature.NERCharacterContextGeneratorConf;
-import com.wxw.ner.character.model.NERCharacterME;
-import com.wxw.word.feature.NERWordContextGenerator;
-import com.wxw.word.feature.NERWordContextGeneratorConf;
-import com.wxw.word.model.NERWordME;
+import com.wxw.character.ner.NERCharacterContextGenerator;
+import com.wxw.character.ner.NERCharacterContextGeneratorConf;
+import com.wxw.character.ner.NERCharacterME;
+import com.wxw.word.ner.NERWordContextGenerator;
+import com.wxw.word.ner.NERWordContextGeneratorConf;
+import com.wxw.word.ner.NERWordME;
 
 import opennlp.tools.util.TrainingParameters;
 

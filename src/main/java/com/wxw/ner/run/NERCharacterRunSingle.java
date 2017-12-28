@@ -7,17 +7,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
-import com.wxw.ner.character.feature.NERCharacterContextGenerator;
-import com.wxw.ner.character.feature.NERCharacterContextGeneratorConf;
-import com.wxw.ner.character.model.NERCharacterMESingle;
-import com.wxw.ner.character.model.NERCharacterModel;
-import com.wxw.ner.crossvalidation.NERCharacterCrossValidation;
-import com.wxw.ner.error.NERErrorPrinter;
+import com.wxw.character.ner.NERCharacterContextGenerator;
+import com.wxw.character.ner.NERCharacterContextGeneratorConf;
+import com.wxw.character.ner.NERCharacterCrossValidation;
+import com.wxw.character.ner.NERCharacterEvaluator;
+import com.wxw.character.ner.NERCharacterMESingle;
+import com.wxw.character.ner.NERCharacterModel;
+import com.wxw.character.ner.NERCharacterSampleStreamSingle;
+import com.wxw.ner.evaluate.NERErrorPrinter;
 import com.wxw.ner.evaluate.NERMeasure;
-import com.wxw.ner.evaluate.NERCharacterEvaluator;
 import com.wxw.ner.sample.NERWordOrCharacterSample;
 import com.wxw.ner.sample.FileInputStreamFactory;
-import com.wxw.ner.sample.NERCharacterSampleStreamSingle;
 
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
