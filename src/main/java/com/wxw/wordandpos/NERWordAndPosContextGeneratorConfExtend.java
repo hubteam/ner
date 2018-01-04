@@ -121,9 +121,8 @@ public class NERWordAndPosContextGeneratorConfExtend implements NERWordAndPosCon
         w1t0Set = (config.getProperty("wordposextend.w1t0", "true").equals("true"));      
 	}
 	
-	public String[] getContext(int index, String[] words, String[] poses, String[] tags, Object[] ac) {
-		// TODO Auto-generated method stub
-		return getContext(index,words,poses,tags);
+	public String[] getContext(int index, String[] words, String[] tags, Object[] ac) {
+		return getContext(index,words,tags,(String[])ac);
 	}
 	
 	/**
@@ -133,7 +132,6 @@ public class NERWordAndPosContextGeneratorConfExtend implements NERWordAndPosCon
 	 * @return
 	 */
 	public boolean isDictionalWords(String words){
-		
 		if(dictionalWords.contains(words)){
 			return true;
 		}else{
@@ -149,14 +147,13 @@ public class NERWordAndPosContextGeneratorConfExtend implements NERWordAndPosCon
 	 * @param tags 命名实体标记数组
 	 * @return
 	 */
-	public String[] getContext(int index, String[] words, String[] poses, String[] tags) {
+	public String[] getContext(int index, String[] words, String[] tags, String[] poses) {
 		String w1, w2, w3, w4,w5,w6,w7, w0, w_1, w_2,w_3,w_4,w_5,w_6,w_7;
         w1 = w2 = w3 = w4 = w5 = w6 = w7 = w0 = w_1 = w_2 = w_3 = w_4 = w_5 = w_6 = w_7 = null;
         String p1, p2, p0, p_1, p_2;
         p1 = p2 = p0 = p_1 = p_2 = null;
         String t_1 = null;
         String t_2 = null;
-        
         w0 = words[index];
         p0 = poses[index];
         if (words.length > index + 1) {
@@ -1662,20 +1659,7 @@ public class NERWordAndPosContextGeneratorConfExtend implements NERWordAndPosCon
 
 	@Override
 	public String toString() {
-		/**
-		 * private boolean w_2Set;
-    private boolean w_1Set;
-    private boolean w0Set;
-    private boolean w1Set;
-    private boolean w2Set;
-    private boolean p_2Set;
-    private boolean p_1Set;
-    private boolean p0Set;
-    private boolean p1Set;
-    private boolean ;
-    private boolean ;
-    private boolean ;
-		 */
+
 		return "NERWordAndPosContextGeneratorConfExtend{" + "w_2Set=" + w_2Set + ", w_1Set=" + w_1Set + 
                 ", w0Set=" + w0Set + ", w1Set=" + w1Set + ", w2Set=" + w2Set + 
                 ", p_2Set=" + p_2Set + ", p_1Set=" + p_1Set + 

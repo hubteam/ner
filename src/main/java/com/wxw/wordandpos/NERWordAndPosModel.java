@@ -6,10 +6,9 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 
-import com.wxw.sequence.NERBeamSearch;
-import com.wxw.sequence.NERSequenceClassificationModel;
-
+import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.model.MaxentModel;
+import opennlp.tools.ml.model.SequenceClassificationModel;
 import opennlp.tools.util.model.BaseModel;
 
 /**
@@ -51,7 +50,7 @@ public class NERWordAndPosModel extends BaseModel{
         }
 
         Properties manifest = (Properties) artifactMap.get(MANIFEST_ENTRY);
-        manifest.setProperty(NERBeamSearch.BEAM_SIZE_PARAMETER, Integer.toString(beamSize));
+        manifest.setProperty(BeamSearch.BEAM_SIZE_PARAMETER, Integer.toString(beamSize));
 
         //放入新训练出来的模型
         artifactMap.put(NER_MODEL_ENTRY_NAME, posModel);
@@ -59,7 +58,7 @@ public class NERWordAndPosModel extends BaseModel{
 	}
 	
 
-	public NERWordAndPosModel(String languageCode, NERSequenceClassificationModel<String> seqPosModel,
+	public NERWordAndPosModel(String languageCode, SequenceClassificationModel<String> seqPosModel,
 			Map<String, String> manifestInfoEntries) {
 		super(COMPONENT_NAME, languageCode, manifestInfoEntries, null);
 		if (seqPosModel == null) {
@@ -81,21 +80,21 @@ public class NERWordAndPosModel extends BaseModel{
         }
 	}
 	
-	public NERSequenceClassificationModel<String> getNERSequenceModel() {
+	public SequenceClassificationModel<String> getNERSequenceModel() {
 
         Properties manifest = (Properties) artifactMap.get(MANIFEST_ENTRY);
 
         if (artifactMap.get(NER_MODEL_ENTRY_NAME) instanceof MaxentModel) {
-            String beamSizeString = manifest.getProperty(NERBeamSearch.BEAM_SIZE_PARAMETER);
+            String beamSizeString = manifest.getProperty(BeamSearch.BEAM_SIZE_PARAMETER);
 
             int beamSize = NERWordAndPosME.DEFAULT_BEAM_SIZE;
             if (beamSizeString != null) {
                 beamSize = Integer.parseInt(beamSizeString);
             }
 
-            return new NERBeamSearch<String>(beamSize, (MaxentModel) artifactMap.get(NER_MODEL_ENTRY_NAME));
-        } else if (artifactMap.get(NER_MODEL_ENTRY_NAME) instanceof NERSequenceClassificationModel) {
-            return (NERSequenceClassificationModel) artifactMap.get(NER_MODEL_ENTRY_NAME);
+            return new BeamSearch<String>(beamSize, (MaxentModel) artifactMap.get(NER_MODEL_ENTRY_NAME));
+        } else if (artifactMap.get(NER_MODEL_ENTRY_NAME) instanceof SequenceClassificationModel) {
+            return (SequenceClassificationModel) artifactMap.get(NER_MODEL_ENTRY_NAME);
         } else {
             return null;
         }

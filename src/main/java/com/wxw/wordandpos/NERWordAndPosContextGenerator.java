@@ -1,7 +1,9 @@
 package com.wxw.wordandpos;
 
-public interface NERWordAndPosContextGenerator extends NERWordAndPosBeamSearchContextGenerator<String>{
+import opennlp.tools.util.BeamSearchContextGenerator;
 
-	String[] getContext(int index,String[] words, String[] poses, String[] tags,Object[] ac);
+public interface NERWordAndPosContextGenerator extends BeamSearchContextGenerator<String>{
+
+	String[] getContext(int index,String[] words, String[] tags, Object[] ac);
 	
 }

@@ -20,10 +20,8 @@ import com.wxw.sample.FileInputStreamFactory;
 import com.wxw.sample.NERWordAndPosSample;
 import com.wxw.sample.NERWordAndPosSampleStream;
 import com.wxw.sample.NERWordOrCharacterSample;
-import com.wxw.sequence.NERBeamSearch;
-import com.wxw.sequence.NERSequenceClassificationModel;
-import com.wxw.sequence.NERSequenceValidator;
 
+import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.EventTrainer;
 import opennlp.tools.ml.TrainerFactory;
 import opennlp.tools.ml.TrainerFactory.TrainerType;
@@ -31,10 +29,12 @@ import opennlp.tools.ml.maxent.io.PlainTextGISModelReader;
 import opennlp.tools.ml.model.AbstractModel;
 import opennlp.tools.ml.model.Event;
 import opennlp.tools.ml.model.MaxentModel;
+import opennlp.tools.ml.model.SequenceClassificationModel;
 import opennlp.tools.tokenize.WhitespaceTokenizer;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
 import opennlp.tools.util.Sequence;
+import opennlp.tools.util.SequenceValidator;
 import opennlp.tools.util.TrainingParameters;
 
 /**
@@ -47,10 +47,10 @@ public class NERWordAndPosME implements NERWordAndPos{
 	private NERWordAndPosContextGenerator contextGenerator;
 	private int size;
 	private Sequence bestSequence;
-	private NERSequenceClassificationModel<String> model;
+	private SequenceClassificationModel<String> model;
 	private NERWordAndPosModel modelPackage;
 
-    private NERSequenceValidator<String> sequenceValidator;
+    private SequenceValidator<String> sequenceValidator;
 	
 	/**
 	 * 构造函数，初始化工作
@@ -68,7 +68,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 	private void init(NERWordAndPosModel model, NERWordAndPosContextGenerator contextGen) {
 		int beamSize = NERWordAndPosME.DEFAULT_BEAM_SIZE;
 
-        String beamSizeString = model.getManifestProperty(NERBeamSearch.BEAM_SIZE_PARAMETER);
+        String beamSizeString = model.getManifestProperty(BeamSearch.BEAM_SIZE_PARAMETER);
 
         if (beamSizeString != null) {
             beamSize = Integer.parseInt(beamSizeString);
@@ -82,7 +82,7 @@ public class NERWordAndPosME implements NERWordAndPos{
         if (model.getNERSequenceModel() != null) {
             this.model = model.getNERSequenceModel();
         } else {
-            this.model = new NERBeamSearch<String>(beamSize,
+            this.model = new BeamSearch<String>(beamSize,
                     model.getNERModel(), 0);
         }
 	}
@@ -125,7 +125,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 	 */
 	public static NERWordAndPosModel train(String languageCode, ObjectStream<NERWordOrCharacterSample> sampleStream, TrainingParameters params,
 			NERWordAndPosContextGenerator contextGen) throws IOException {
-		String beamSizeString = params.getSettings().get(NERBeamSearch.BEAM_SIZE_PARAMETER);
+		String beamSizeString = params.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
 		int beamSize = NERWordAndPosME.DEFAULT_BEAM_SIZE;
         if (beamSizeString != null) {
             beamSize = Integer.parseInt(beamSizeString);
@@ -134,7 +134,7 @@ public class NERWordAndPosME implements NERWordAndPos{
         Map<String, String> manifestInfoEntries = new HashMap<String, String>();
         //event_model_trainer
         TrainerType trainerType = TrainerFactory.getTrainerType(params.getSettings());
-        NERSequenceClassificationModel<String> seqPosModel = null;
+        SequenceClassificationModel<String> seqPosModel = null;
         if (TrainerType.EVENT_MODEL_TRAINER.equals(trainerType)) {
         	//sampleStream为PhraseAnalysisSampleStream对象
             ObjectStream<Event> es = new NERWordAndPosSampleEvent(sampleStream, contextGen);
@@ -189,8 +189,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 	}
 	
 	public String[] tag(String[] words,String[] pos, Object[] additionaContext){
-		bestSequence = model.bestSequence(words, pos, additionaContext, contextGenerator,sequenceValidator);
-      //  System.out.println(bestSequence);
+		bestSequence = model.bestSequence(words, pos, contextGenerator, sequenceValidator);
 		List<String> t = bestSequence.getOutcomes();
 		return t.toArray(new String[t.size()]);
 	}
@@ -207,7 +206,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 		PlainTextGISModelReader modelReader = null;
 		AbstractModel abModel = null;
 		NERWordAndPosModel model = null;
-		String beamSizeString = params.getSettings().get(NERBeamSearch.BEAM_SIZE_PARAMETER);
+		String beamSizeString = params.getSettings().get(BeamSearch.BEAM_SIZE_PARAMETER);
 	      
         int beamSize = NERWordAndPosME.DEFAULT_BEAM_SIZE;
         if (beamSizeString != null) {
@@ -250,7 +249,6 @@ public class NERWordAndPosME implements NERWordAndPos{
             String[] poses = sample.getPoses();
             
             for (int i = 1; i < words.length; i++) {
-//            	System.out.print(words[i]);
             	if(i == 1){
             		if(poses[i-1].equals("nr") && poses[i].equals("n")){
             			dict.add(words[i]);
@@ -261,7 +259,6 @@ public class NERWordAndPosME implements NERWordAndPos{
     				}
             	}				
 			}
-            System.out.println();
         }        
         return dict;
 	}
@@ -301,7 +298,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 	 * @return 分词加词性标注的序列
 	 */
 	public String[][] tag(int numTaggings, String[] characters,String[] pos) {
-        Sequence[] bestSequences = model.bestSequences(numTaggings, characters, pos, null,
+        Sequence[] bestSequences = model.bestSequences(numTaggings, characters, pos,
         		contextGenerator, sequenceValidator);
         String[][] tagsandposes = new String[bestSequences.length][];
         for (int si = 0; si < tagsandposes.length; si++) {
@@ -329,7 +326,7 @@ public class NERWordAndPosME implements NERWordAndPos{
      * @return 
      */
     public Sequence[] topKSequences(String[] characters, String[] pos, Object[] additionaContext) {
-        return model.bestSequences(size, characters, pos, additionaContext,
+        return model.bestSequences(size, characters, pos, 
         		contextGenerator, sequenceValidator);
     }
     

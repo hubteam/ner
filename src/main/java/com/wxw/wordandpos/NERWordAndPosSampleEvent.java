@@ -53,7 +53,7 @@ public class NERWordAndPosSampleEvent extends AbstractEventStream<NERWordOrChara
 		List<Event> events = new ArrayList<Event>(words.length);
 		for (int i = 0; i < words.length; i++) {			
 			//产生事件的部分
-			String[] context = generator.getContext(i, words, poses, tags, ac);
+			String[] context = generator.getContext(i, words, tags, poses);
             events.add(new Event(tags[i], context));
 		}
 		return events;

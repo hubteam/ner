@@ -113,12 +113,12 @@ public class NERWordAndPosContextGeneratorConf implements NERWordAndPosContextGe
         
 	}
 	
-	public String[] getContext(int index, String[] words, String[] poses, String[] tags, Object[] ac) {
+	public String[] getContext(int index, String[] words, String[] tags, Object[] ac) {
 		// TODO Auto-generated method stub
-		return getContext(index,words,poses,tags);
+		return getContext(index,words,tags,(String[])ac);
 	}
 
-	public String[] getContext(int index, String[] words, String[] poses, String[] tags) {
+	public String[] getContext(int index, String[] words, String[] tags, String[] poses) {
 		String w1, w2, w0, w_1, w_2;
         w1 = w2 = w0 = w_1 = w_2 = null;
         String p1, p2, p0, p_1, p_2;
