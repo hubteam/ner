@@ -1,4 +1,4 @@
-package com.wxw.word;
+package com.wxw.deprun;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,6 +8,11 @@ import com.wxw.evaluate.NERMeasure;
 import com.wxw.sample.FileInputStreamFactory;
 import com.wxw.sample.NERWordOrCharacterSample;
 import com.wxw.sample.NERWordSampleStream;
+import com.wxw.word.NERWordContextGenerator;
+import com.wxw.word.NERWordContextGeneratorConf;
+import com.wxw.word.NERWordEvaluator;
+import com.wxw.word.NERWordME;
+import com.wxw.word.NERWordModel;
 
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;

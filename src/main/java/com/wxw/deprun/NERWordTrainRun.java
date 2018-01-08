@@ -1,7 +1,11 @@
-package com.wxw.word;
+package com.wxw.deprun;
 
 import java.io.File;
 import java.io.IOException;
+
+import com.wxw.word.NERWordContextGenerator;
+import com.wxw.word.NERWordContextGeneratorConf;
+import com.wxw.word.NERWordME;
 
 import opennlp.tools.util.TrainingParameters;
 

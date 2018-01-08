@@ -1,9 +1,15 @@
-package com.wxw.character;
+package com.wxw.deprun;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import com.wxw.character.NERCharacterContextGenerator;
+import com.wxw.character.NERCharacterContextGeneratorConf;
+import com.wxw.character.NERCharacterEvaluator;
+import com.wxw.character.NERCharacterME;
+import com.wxw.character.NERCharacterModel;
+import com.wxw.character.NERCharacterSampleStream;
 import com.wxw.evaluate.NERErrorPrinter;
 import com.wxw.evaluate.NERMeasure;
 import com.wxw.sample.FileInputStreamFactory;

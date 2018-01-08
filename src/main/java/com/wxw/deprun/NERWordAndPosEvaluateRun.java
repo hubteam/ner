@@ -1,4 +1,4 @@
-package com.wxw.word;
+package com.wxw.deprun;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -7,39 +7,44 @@ import java.io.IOException;
 import com.wxw.evaluate.NERErrorPrinter;
 import com.wxw.evaluate.NERMeasure;
 import com.wxw.sample.FileInputStreamFactory;
+import com.wxw.sample.NERWordAndPosSampleStream;
 import com.wxw.sample.NERWordOrCharacterSample;
-import com.wxw.sample.NERWordSampleStream;
+import com.wxw.wordandpos.NERWordAndPosContextGenerator;
+import com.wxw.wordandpos.NERWordAndPosContextGeneratorConfExtend;
+import com.wxw.wordandpos.NERWordAndPosEvaluator;
+import com.wxw.wordandpos.NERWordAndPosME;
+import com.wxw.wordandpos.NERWordAndPosModel;
 
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
 import opennlp.tools.util.TrainingParameters;
 
-public class NERWordEvaluateRun {
+public class NERWordAndPosEvaluateRun {
 
 	private static void usage(){
-		System.out.println(NERWordEvaluateRun.class.getName() + " -data <trainFile> -gold <goldFile> -error <errorFile> -encoding <encoding>" + " [-cutoff <num>] [-iters <num>]");
+		System.out.println(NERWordAndPosEvaluateRun.class.getName() + " -data <trainFile> -gold <goldFile> -error <errorFile> -encoding <encoding>" + " [-cutoff <num>] [-iters <num>]");
 	}
 	
 	public static void eval(File trainFile, TrainingParameters params, File goldFile, String encoding, File errorFile) throws IOException{
 		long start = System.currentTimeMillis();
-        NERWordContextGenerator contextGen = new NERWordContextGeneratorConf();
-        NERWordModel model = NERWordME.train(trainFile, params, contextGen, encoding);
+        NERWordAndPosContextGenerator contextGen = new NERWordAndPosContextGeneratorConfExtend();
+        NERWordAndPosModel model = NERWordAndPosME.train(trainFile, params, contextGen, encoding);
         System.out.println("训练时间： " + (System.currentTimeMillis() - start));
-        NERWordME tagger = new NERWordME(model,contextGen);
+        NERWordAndPosME tagger = new NERWordAndPosME(model,contextGen);
         
         NERMeasure measure = new NERMeasure();
-        NERWordEvaluator evaluator = null;
+        NERWordAndPosEvaluator evaluator = null;
         NERErrorPrinter printer = null;
         if(errorFile != null){
         	System.out.println("Print error to file " + errorFile);
         	printer = new NERErrorPrinter(new FileOutputStream(errorFile));    	
-        	evaluator = new NERWordEvaluator(tagger,printer);
+        	evaluator = new NERWordAndPosEvaluator(tagger,printer);
         }else{
-        	evaluator = new NERWordEvaluator(tagger);
+        	evaluator = new NERWordAndPosEvaluator(tagger);
         }
         evaluator.setMeasure(measure);
         ObjectStream<String> linesStream = new PlainTextByLineStream(new FileInputStreamFactory(goldFile), encoding);
-        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordSampleStream(linesStream);
+        ObjectStream<NERWordOrCharacterSample> sampleStream = new NERWordAndPosSampleStream(linesStream);
         evaluator.evaluate(sampleStream);
         NERMeasure measureRes = evaluator.getMeasure();
         System.out.println("标注时间： " + (System.currentTimeMillis() - start));
@@ -101,6 +106,6 @@ public class NERWordEvaluateRun {
         }
         else
             eval(new File(trainFile), params, new File(goldFile), encoding, null);
-	}
-		
+	}	
 }
+

@@ -1,17 +1,18 @@
-package com.wxw.character;
+package com.wxw.deprun;
 
 import java.io.File;
 import java.io.IOException;
 
-import com.wxw.word.NERWordContextGenerator;
-import com.wxw.word.NERWordContextGeneratorConf;
-import com.wxw.word.NERWordME;
+import com.wxw.wordandpos.NERWordAndPosContextGenerator;
+import com.wxw.wordandpos.NERWordAndPosContextGeneratorConfExtend;
+import com.wxw.wordandpos.NERWordAndPosME;
 
 import opennlp.tools.util.TrainingParameters;
 
-public class NERCharacterTrainRun {
+public class NERWordAndPosTrainRun {
+
 	private static void usage(){
-		System.out.println(NERCharacterTrainRun.class.getName()+"-data <corpusFile> -model <modelFile> -encoding"+"[-cutoff <num>] [-iters <num>]");
+		System.out.println(NERWordAndPosTrainRun.class.getName()+"-data <corpusFile> -model <modelFile> -encoding"+"[-cutoff <num>] [-iters <num>]");
 	}
 	
 	public static void main(String[] args) throws IOException {
@@ -53,11 +54,11 @@ public class NERCharacterTrainRun {
             }
         }
         
-        NERCharacterContextGenerator contextGen = new NERCharacterContextGeneratorConf();
+        NERWordAndPosContextGenerator contextGen = new NERWordAndPosContextGeneratorConfExtend();
         TrainingParameters params = TrainingParameters.defaultParams();
         params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(cutoff));
         params.put(TrainingParameters.ITERATIONS_PARAM, Integer.toString(iters));
         
-        NERCharacterME.train(corpusFile, modelFile, params, contextGen, encoding);
+        NERWordAndPosME.train(corpusFile, modelFile, params, contextGen, encoding);
 	}
 }
