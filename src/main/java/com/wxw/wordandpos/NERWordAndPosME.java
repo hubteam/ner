@@ -519,7 +519,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 			List<NamedEntity> ners = new ArrayList<>();
 			for (int j = 0; j < tags[i].length; j++) {
 				String flag;
-				if(tags[j].equals("o")){
+				if(tags[i][j].equals("o")){
 					flag = "o";
 				}else{
 					flag = tags[i][j].split("_")[1];
