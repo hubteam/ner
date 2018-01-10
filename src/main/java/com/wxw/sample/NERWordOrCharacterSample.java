@@ -13,9 +13,8 @@ public class NERWordOrCharacterSample {
 	
 	/**
 	 * 构造
-	 * @param words 词语
-	 * @param poses 词性
-	 * @param tags 实体标记
+	 * @param words 词语或字符
+	 * @param tags 命名实体标记
 	 */
 	public NERWordOrCharacterSample(String[] words,String[] tags){
 		this(words,tags,null);
@@ -23,8 +22,7 @@ public class NERWordOrCharacterSample {
 	
 	/**
 	 * 构造
-	 * @param words 词语
-	 * @param poses 词性
+	 * @param words 词语或单个字
 	 * @param tags 实体标记
 	 */
 	public NERWordOrCharacterSample(List<String> words,List<String> tags){
@@ -33,8 +31,7 @@ public class NERWordOrCharacterSample {
 	
 	/**
 	 * 构造
-	 * @param words 词语
-	 * @param poses 词性
+	 * @param words 词语或单个字
 	 * @param tags 实体标记
 	 * @param additionalContext 额外的信息
 	 */
@@ -44,8 +41,7 @@ public class NERWordOrCharacterSample {
 	
 	/**
 	 * 构造
-	 * @param words 词语
-	 * @param poses 词性
+	 * @param words 词语或单个字
 	 * @param tags 实体标记
 	 * @param additionalContext 额外的信息
 	 */
@@ -91,7 +87,7 @@ public class NERWordOrCharacterSample {
     }
 	
 	/**
-     * 得到对应的命名实体标注序列
+     * 对基于字的得到对应的命名实体标注序列
      * @param tagsandposesPre 字的边界_命名实体标注 这种格式组成的序列
      * @return
      */

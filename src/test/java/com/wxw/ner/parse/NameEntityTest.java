@@ -1,5 +1,7 @@
 package com.wxw.ner.parse;
 
+import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +24,8 @@ public class NameEntityTest {
 	private String[] words;
 	private List<NamedEntity> ner = new ArrayList<>();
 	private NERWordME nwm;
+	private String[] nerresult;
+	private String[] tagresult;
 	
 	@Before
 	public void setUp(){
@@ -44,12 +48,15 @@ public class NameEntityTest {
 			}
 			i = ner.get(ner.size()-1).getEnd();
 		}
+		nerresult = new String[]{"林政志","供认了他先后５次从","玉溪卷烟厂","套购８０００多件卷烟、牟取暴利的事实，并交待他多次给","褚时健","的妻子","马静芬","、妻妹马","静芳","、妻弟","马建华","等人送钱送物９０余万元。"};
+		tagresult = new String[]{"nr","o","nt","o","nr","o","nr","o","ns","o","nr","o"};
 	}
 	
 	@Test
 	public void test(){
 		for (int i = 0; i < ner.size(); i++) {
-			System.out.println(ner.get(i).getString()+"/"+ner.get(i).getType());
+			assertEquals(nerresult[i],ner.get(i).getString());
+			assertEquals(tagresult[i],ner.get(i).getType());
 		}
 	}
 }

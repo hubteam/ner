@@ -25,11 +25,6 @@ public class NERParseCharacter implements NERParseStrategy{
 	    ArrayList<String> tags = new ArrayList<String>();
 	    
 	    for (int i = 0; i < wordsAndPoses.length; i++) {
-//	    	String[] wordanspos = wordsAndPoses[i].split("/");
-//	    	String word = wordanspos[0];
-//	    	String tag = wordanspos[1];
-//	    	words.add(word);
-//	    	tags.add(tag);
 	    	
 	    	//改进变成单个字的
 	    	String[] wordanspos = wordsAndPoses[i].split("/");

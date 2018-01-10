@@ -9,19 +9,14 @@ import com.wxw.sample.NERWordOrCharacterSample;
 import opennlp.tools.tokenize.WhitespaceTokenizer;
 
 /**
- * 为基于分词的命名实体识别解析文本
+ * 对人民日报语料做基于字的解析
  * @author 王馨苇
  *
  */
-public class NERParseWordPD implements NERParseStrategy{
-	
-	private ArrayList<String> words = new ArrayList<String>();
-    private ArrayList<String> tags = new ArrayList<String>();
+public class NERParseCharacterPD implements NERParseStrategy {
 
-	/**
-	 * 解析人民日报词性标记的语料，将词性映射到ner标记，得到词和ner标记
-	 * @param sentence 人民日报词性标记的语料，将词性映射到ner标记
-	 */
+	private ArrayList<String> characters = new ArrayList<String>();
+    private ArrayList<String> tags = new ArrayList<String>();
 	@Override
 	public NERWordOrCharacterSample parse(String sentence) {
 		String[] str = WhitespaceTokenizer.INSTANCE.tokenize(sentence);
@@ -35,9 +30,10 @@ public class NERParseWordPD implements NERParseStrategy{
 			word = getWordAndPos(str,i)[0];
 			pos = getWordAndPos(str,i)[1];
 			if(word.startsWith("[")){
+				String temp = "";//存放词语的拼接
 				word = word.substring(1);
 				while(!pos.contains("]")){
-					queue.offer(word);
+					temp += word;
 					if(i+1 < str.length){
 						i++;
 					}else{
@@ -48,24 +44,25 @@ public class NERParseWordPD implements NERParseStrategy{
 				}
 				int index = pos.indexOf("]");
 				tag = pos.substring(index+1);
-				queue.offer(word);
+				temp += word;
 				if(tag.equals("nr")){
 					ner = "nr";
-					add(queue,ner);
+					add(temp,ner);
 				}else if(tag.equals("ns")){
 					ner = "ns";
-					add(queue,ner);
+					add(temp,ner);
 				}else if(tag.equals("nt")){
 					ner = "nt";
-					add(queue,ner);
+					add(temp,ner);
 				}else if(tag.equals("nz")){
 					ner = "nz";
-					add(queue,ner);
+					add(temp,ner);
 				}
 			}else if(pos.equals("nr")){
+				String temp = "";
 				ner = "nr";
 				while(pos.equals("nr")){
-					queue.offer(word);						
+					temp += word;
 					if(i+1 < str.length){
 						i++;
 					}else{
@@ -77,16 +74,17 @@ public class NERParseWordPD implements NERParseStrategy{
 					word = getWordAndPos(str,i)[0];
 					pos = getWordAndPos(str,i)[1];	
 				}
-				add(queue,ner);
+				add(temp,ner);
 				if(i == str.length-1){
 					
 				}else{
 					i--;
 				}
 			}else if(pos.equals("ns")){
+				String temp = "";
 				ner = "ns";
 				while(pos.equals("ns")){
-					queue.offer(word);
+					temp += word;
 					if((i+1) < str.length){
 						i++;
 					}else{
@@ -95,7 +93,7 @@ public class NERParseWordPD implements NERParseStrategy{
 					word = getWordAndPos(str,i)[0];
 					pos = getWordAndPos(str,i)[1];	
 				}
-				add(queue,ner);
+				add(temp,ner);
 
 				if(i == str.length-1){
 					
@@ -103,9 +101,10 @@ public class NERParseWordPD implements NERParseStrategy{
 					i--;
 				}
 			}else if(pos.equals("nt")){
+				String temp = "";
 				ner = "nt";
 				while(pos.equals("nt")){
-					queue.offer(word);
+					temp += word;
 					if(i+1 < str.length){
 						i++;
 					}else{
@@ -114,7 +113,7 @@ public class NERParseWordPD implements NERParseStrategy{
 					word = getWordAndPos(str,i)[0];
 					pos = getWordAndPos(str,i)[1];	
 				}
-				add(queue,ner);
+				add(temp,ner);
 
 				if(i == str.length-1){
 					
@@ -122,6 +121,7 @@ public class NERParseWordPD implements NERParseStrategy{
 					i--;
 				}
 			}else if(pos.equals("nz")){
+				String temp = "";
 				ner = "nz";
 				while(pos.equals("nz")){
 					queue.offer(word);
@@ -133,7 +133,7 @@ public class NERParseWordPD implements NERParseStrategy{
 					word = getWordAndPos(str,i)[0];
 					pos = getWordAndPos(str,i)[1];	
 				}
-				add(queue,ner);
+				add(temp,ner);
 
 				if(i == str.length-1){
 					
@@ -141,8 +141,10 @@ public class NERParseWordPD implements NERParseStrategy{
 					i--;
 				}
 			}else{
-				words.add(word);
-				tags.add("o");
+				for (int j = 0; j < word.length(); j++) {
+					characters.add(word.charAt(j)+"");
+					tags.add("o");
+				}
 			}
 			
 			if(i+1 < str.length){
@@ -151,7 +153,7 @@ public class NERParseWordPD implements NERParseStrategy{
 				break;
 			}
 		}
-		return new NERWordOrCharacterSample(words,tags);
+		return new NERWordOrCharacterSample(characters,tags);
 	}
 
 	/**
@@ -166,39 +168,33 @@ public class NERParseWordPD implements NERParseStrategy{
 	}
 	
 	/**
-	 * 根据当前队列的长度为当前队列中的词语增加标记
-	 * @param queue 词语队列
+	 * 解析出字符和字符的标记
+	 * @param str 词语拼接的字符串
 	 * @param tag 标价
 	 */
-	public void add(Queue<String> queue,String tag){
-		if(queue.size() == 1){
-			words.add(queue.poll());
+	public void add(String str,String tag){
+		if(str.length() == 1){
+			characters.add(str);
 			tags.add("s_"+tag);
-		}else if(queue.size() == 2){
-			words.add(queue.poll());
+		}else if(str.length() == 2){
+			characters.add(str.toCharArray()[0]+"");
 			tags.add("b_"+tag);
-			words.add(queue.poll());
+			characters.add(str.toCharArray()[1]+"");
 			tags.add("e_"+tag);
-		}else if(queue.size() > 2){
-			String temp;
-			int count = 1;
-			int size = queue.size();
-			while((temp = queue.poll()) != null){
-				if(count == 1){
-					words.add(temp);
+		}else if(str.length() > 2){
+			char[] c = str.toCharArray();
+			for (int i = 0; i < c.length; i++) {
+				if(i == 0){
+					characters.add(c[0]+"");
 					tags.add("b_"+tag);
-					count++;
-				}else if(count == size){
-					words.add(temp);
+				}else if(i == c.length -1){
+					characters.add(c[c.length-1]+"");
 					tags.add("e_"+tag);
-					count++;
 				}else{
-					words.add(temp);
+					characters.add(c[i]+"");
 					tags.add("m_"+tag);
-					count++;
-				}	
+				}
 			}
 		}
-		queue.clear();
 	}
 }
