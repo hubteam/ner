@@ -225,7 +225,7 @@ public class NERWordRun {
 	 */
 	private static NERWordContextGenerator getContextGenerator(Properties config) {
 		String featureClass = config.getProperty("feature.class");
-		if(featureClass.equals("com.wxw.ner.word.feature.NERWordContextGeneratorConf")){
+		if(featureClass.equals("com.wxw.word.NERWordContextGeneratorConf")){
 			//初始化需要哪些特征
         	return  new NERWordContextGeneratorConf(config);
 		}else{

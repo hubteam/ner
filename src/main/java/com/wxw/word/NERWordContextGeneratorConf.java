@@ -99,6 +99,7 @@ public class NERWordContextGeneratorConf implements NERWordContextGenerator{
 	 * @param tags 命名实体标记
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	private String[] getContext(int index, String[] words, String[] tags) {
 		String w1, w2, w3,w4,w5,w6, w0, w_1, w_2,w_3,w_4,w_5,w_6;
         w1 = w2 = w3 = w4 = w5 = w6 = w0 = w_1 = w_2 = w_3= w_4 = w_5 = w_6 =  null;

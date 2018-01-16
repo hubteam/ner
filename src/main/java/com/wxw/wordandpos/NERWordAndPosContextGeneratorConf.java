@@ -41,10 +41,14 @@ public class NERWordAndPosContextGeneratorConf implements NERWordAndPosContextGe
     private boolean t_1Set;
     private boolean t_2Set;
     private boolean t_2t_1Set;
-  //增加的字典特征的控制变量
-    private boolean Lt0Set;
+    //增加的字典特征的控制变量
+    @SuppressWarnings("unused")
+	private boolean Lt0Set;
+    @SuppressWarnings("unused")
     private boolean w_1t0Set;
+    @SuppressWarnings("unused")
     private boolean w0t0Set;
+    @SuppressWarnings("unused")
     private boolean w1t0Set;
 	/**
 	 * 构造
@@ -114,7 +118,6 @@ public class NERWordAndPosContextGeneratorConf implements NERWordAndPosContextGe
 	}
 	
 	public String[] getContext(int index, String[] words, String[] tags, Object[] ac) {
-		// TODO Auto-generated method stub
 		return getContext(index,words,tags,(String[])ac);
 	}
 

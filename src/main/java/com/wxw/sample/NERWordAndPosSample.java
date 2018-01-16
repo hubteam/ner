@@ -7,7 +7,6 @@ import java.util.List;
 public class NERWordAndPosSample extends NERWordOrCharacterSample{
 
 	public List<String> poses;
-	private String[][] addtionalContext;
 	
 	/**
 	 * 构造

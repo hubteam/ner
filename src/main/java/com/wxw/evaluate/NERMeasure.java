@@ -53,7 +53,6 @@ public class NERMeasure {
     	//记录当前所在的词的位置
     	int i = 0,j = 0;
     	//记录i的前一次的值
-    	int iPre = -1;
     	if(wordsRef.length > 0 && wordsPre.length > 0){
     		while(wordsRef[i] != null || !("".equals(wordsRef[i]))|| wordsPre[j] != null || !("".equals(wordsPre[j]))){
         		countRef += wordsRef[i].length();
@@ -86,7 +85,6 @@ public class NERMeasure {
         				truePositivenz++;  
         			}
 
-        			iPre = i;
     				//两个字符串同时向后扫描
         			i++;j++;
         			//为了防止：已经到达边界了，还用references[i]或者predictions[i]来判断，此时越界了
@@ -97,20 +95,17 @@ public class NERMeasure {
         			//不匹配的情况，则需要比较当前扫过的总长度
         			//（1）：长度长的那个不动，长度短的那个要继续向前扫描比较   			
         			if(countRef > countPre){
-    					iPre = i;
         				j++;
     					countRef -= wordsRef[i].length();
     					if(j >= wordsPre.length)
     						break;
     					//（2）：长度相等的时候，二者都需要向前扫描
     				}else if(countRef == countPre){
-    					iPre = i;
     					i++;j++;
     					if(i >= wordsRef.length || j >= wordsPre.length)
     						break;
     					//（1）：长度长的那个不动，长度短的那个要继续向前扫描比较
     				}else if(countRef < countPre){
-    					iPre = i;
     					i++;
     					countPre -= wordsPre[j].length();
     					if(i >= wordsRef.length)

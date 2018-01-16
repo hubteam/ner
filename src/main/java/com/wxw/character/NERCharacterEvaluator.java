@@ -9,6 +9,7 @@ import opennlp.tools.util.eval.Evaluator;
 public class NERCharacterEvaluator extends Evaluator<NERWordOrCharacterSample>{
 
 	private NERCharacterME tagger;
+	@SuppressWarnings("unused")
 	private NERCharacterMESingle taggerSingle;
 	private NERMeasure measure;
 	
@@ -83,26 +84,6 @@ public class NERCharacterEvaluator extends Evaluator<NERWordOrCharacterSample>{
 		
 		NERWordOrCharacterSample prediction = new NERWordOrCharacterSample(charactersRef, wordsAndtagsPre);
 		measure.update(wordsRef, tagsRef, wordsPre, tagsPre);
-//		for (int i = 0; i < tagsRef.length; i++) {
-//			System.out.print(wordsRef[i]+"/"+tagsRef[i]);
-//		}
-//		System.out.println();
-//		for (int i = 0; i < wordsAndtagsPre.length; i++) {
-//			System.out.print(wordsAndtagsPre[i]);
-//		}
-//		System.out.println();
-//		for (int i = 0; i < wordsPre.length; i++) {
-//			System.out.print(wordsPre[i]+" ");
-//		}
-//		System.out.println();
-//		for (int i = 0; i < tagsPre.length; i++) {
-//			System.out.print(tagsPre[i]+" ");
-//		}
-//		System.out.println();
-//		for (int i = 0; i < tagsPre.length; i++) {
-//			System.out.print(wordsPre[i]+"/"+tagsPre[i]);
-//		}
-//		System.out.println();
 
 		return prediction;
 	} 
