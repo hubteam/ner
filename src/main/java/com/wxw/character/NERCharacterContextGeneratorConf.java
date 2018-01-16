@@ -8,7 +8,6 @@ import java.util.Properties;
 import java.util.Set;
 
 import com.wxw.dict.DictionaryWrapper;
-import com.wxw.dict.ReadAdditionalDitionary;
 /**
  * 根据配置文件生成特征
  * @author 王馨苇
@@ -113,6 +112,7 @@ public class NERCharacterContextGeneratorConf implements NERCharacterContextGene
 		return getContext(index,words,tags);
 	}
 
+	@SuppressWarnings("unused")
 	private String[] getContext(int index, String[] words, String[] tags) {
 		String w1, w2, w3,w4,w5,w6, w0, w_1, w_2,w_3,w_4,w_5,w_6;
         w1 = w2 = w3 = w4 = w5 = w6 = w0 = w_1 = w_2 = w_3= w_4 = w_5 = w_6 =  null;

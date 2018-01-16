@@ -80,6 +80,7 @@ public class NERWordAndPosModel extends BaseModel{
         }
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public SequenceClassificationModel<String> getNERSequenceModel() {
 
         Properties manifest = (Properties) artifactMap.get(MANIFEST_ENTRY);

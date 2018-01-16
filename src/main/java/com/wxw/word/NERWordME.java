@@ -43,9 +43,6 @@ public class NERWordME implements NERWord{
 	private int size;
 	private Sequence bestSequence;
 	private SequenceClassificationModel<String> model;
-	private NERWordModel modelPackage;
-	private List<String> characters = new ArrayList<String>();
-	private List<String> tags = new ArrayList<String>();
 
     private SequenceValidator<String> sequenceValidator;
 	
@@ -75,7 +72,6 @@ public class NERWordME implements NERWord{
             beamSize = Integer.parseInt(beamSizeString);
         }
 
-        modelPackage = model;
 
         contextGenerator = contextGen;
         size = beamSize;
@@ -230,13 +226,10 @@ public class NERWordME implements NERWord{
 			System.out.println("读取模型成功");
             return model;
         } catch (UnsupportedOperationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return null;
@@ -320,6 +313,7 @@ public class NERWordME implements NERWord{
 	   * @param flag 实体标记
 	   * @return
 	   */
+	@SuppressWarnings("unused")
 	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
 		NamedEntity ner = new NamedEntity();
 		for (int i = begin; i < tags.length; i++) {

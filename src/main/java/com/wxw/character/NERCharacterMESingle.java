@@ -40,12 +40,8 @@ public class NERCharacterMESingle implements NERCharacterSingle{
 
 	public static final int DEFAULT_BEAM_SIZE = 3;
 	private NERCharacterContextGenerator contextGenerator;
-	private int size;
 	private Sequence bestSequence;
 	private SequenceClassificationModel<String> model;
-	private NERCharacterModel modelPackage;
-	private List<String> characters = new ArrayList<String>();
-	private List<String> tags = new ArrayList<String>();
 
     private SequenceValidator<String> sequenceValidator;
 	
@@ -71,10 +67,7 @@ public class NERCharacterMESingle implements NERCharacterSingle{
             beamSize = Integer.parseInt(beamSizeString);
         }
 
-        modelPackage = model;
-
         contextGenerator = contextGen;
-        size = beamSize;
         sequenceValidator = new DefaultNERCharacterSequenceValidator();
         if (model.getNERSequenceModel() != null) {
             this.model = model.getNERSequenceModel();
@@ -231,13 +224,10 @@ public class NERCharacterMESingle implements NERCharacterSingle{
 			System.out.println("读取模型成功");
             return model;
         } catch (UnsupportedOperationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return null;
@@ -294,6 +284,7 @@ public class NERCharacterMESingle implements NERCharacterSingle{
 	 * @param flag 实体标记
 	 * @return
 	 */
+	@SuppressWarnings("unused")
 	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
 		NamedEntity ner = new NamedEntity();
 		for (int i = begin; i < tags.length; i++) {

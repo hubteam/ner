@@ -48,7 +48,6 @@ public class NERWordAndPosME implements NERWordAndPos{
 	private int size;
 	private Sequence bestSequence;
 	private SequenceClassificationModel<String> model;
-	private NERWordAndPosModel modelPackage;
 
     private SequenceValidator<String> sequenceValidator;
 	
@@ -73,8 +72,6 @@ public class NERWordAndPosME implements NERWordAndPos{
         if (beamSizeString != null) {
             beamSize = Integer.parseInt(beamSizeString);
         }
-
-        modelPackage = model;
 
         contextGenerator = contextGen;
         size = beamSize;
@@ -222,13 +219,10 @@ public class NERWordAndPosME implements NERWordAndPos{
 			System.out.println("读取模型成功");
             return model;
         } catch (UnsupportedOperationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return null;
@@ -338,6 +332,7 @@ public class NERWordAndPosME implements NERWordAndPos{
 	   * @param flag 实体标记
 	   * @return
 	   */
+	@SuppressWarnings("unused")
 	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
 		NamedEntity ner = new NamedEntity();
 		for (int i = begin; i < tags.length; i++) {

@@ -2,8 +2,6 @@ package com.wxw.parse;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
-
 import com.wxw.sample.NERWordOrCharacterSample;
 
 import opennlp.tools.tokenize.WhitespaceTokenizer;

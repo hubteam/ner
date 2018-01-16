@@ -20,7 +20,6 @@ import opennlp.tools.ml.EventTrainer;
 import opennlp.tools.ml.TrainerFactory;
 import opennlp.tools.ml.TrainerFactory.TrainerType;
 import opennlp.tools.ml.maxent.io.PlainTextGISModelReader;
-import opennlp.tools.ml.maxent.io.PlainTextGISModelWriter;
 import opennlp.tools.ml.model.AbstractModel;
 import opennlp.tools.ml.model.Event;
 import opennlp.tools.ml.model.MaxentModel;
@@ -43,7 +42,6 @@ public class NERCharacterME implements NERCharacter{
 	private int size;
 	private Sequence bestSequence;
 	private SequenceClassificationModel<String> model;
-	private NERCharacterModel modelPackage;
     private SequenceValidator<String> sequenceValidator;
 	
 	/**
@@ -67,8 +65,6 @@ public class NERCharacterME implements NERCharacter{
         if (beamSizeString != null) {
             beamSize = Integer.parseInt(beamSizeString);
         }
-
-        modelPackage = model;
 
         contextGenerator = contextGen;
         size = beamSize;
@@ -216,10 +212,8 @@ public class NERCharacterME implements NERCharacter{
 			System.out.println("读取模型成功");
             return model;
         } catch (UnsupportedOperationException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -288,7 +282,7 @@ public class NERCharacterME implements NERCharacter{
 	   */
 	public NamedEntity getNer(int begin,String[] tags,String[] words,String flag){
 		NamedEntity ner = new NamedEntity();
-		for (int i = begin; i < tags.length; i++) {
+		for (int i = begin; i < tags.length;) {
 			List<String> wordStr = new ArrayList<>();
 			String word = "";
 			if(tags[i].equals(flag)){

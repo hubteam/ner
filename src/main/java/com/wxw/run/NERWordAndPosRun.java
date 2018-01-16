@@ -6,16 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Properties;
 
-import com.wxw.word.NERWordModel;
 import com.wxw.evaluate.NERErrorPrinter;
 import com.wxw.evaluate.NERMeasure;
 import com.wxw.sample.FileInputStreamFactory;
-import com.wxw.sample.NERWordAndPosSample;
 import com.wxw.sample.NERWordAndPosSampleStream;
 import com.wxw.sample.NERWordOrCharacterSample;
 import com.wxw.wordandpos.NERWordAndPosContextGenerator;

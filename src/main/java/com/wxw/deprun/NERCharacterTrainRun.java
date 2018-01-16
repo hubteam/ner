@@ -6,10 +6,6 @@ import java.io.IOException;
 import com.wxw.character.NERCharacterContextGenerator;
 import com.wxw.character.NERCharacterContextGeneratorConf;
 import com.wxw.character.NERCharacterME;
-import com.wxw.word.NERWordContextGenerator;
-import com.wxw.word.NERWordContextGeneratorConf;
-import com.wxw.word.NERWordME;
-
 import opennlp.tools.util.TrainingParameters;
 
 public class NERCharacterTrainRun {

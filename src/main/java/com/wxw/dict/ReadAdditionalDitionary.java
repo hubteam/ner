@@ -7,14 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
@@ -38,14 +31,12 @@ public class ReadAdditionalDitionary {
 					wordSet.add(line);
 				}
 			}
+			br.close();
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return wordSet;	
@@ -74,35 +65,23 @@ public class ReadAdditionalDitionary {
 					}
 				}
 			}
-//			List<Entry<String, Integer>> list = new ArrayList<Entry<String, Integer>>(hs.entrySet());  
-//	          
-//	        Collections.sort(list,new Comparator<Map.Entry<String,Integer>>() {  
-//	            //升序排序  
-//	            public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {  
-//	                return o2.getValue().compareTo(o1.getValue());  
-//	            }  
-//	        });  
-	          int length = 0;
+			br.close();
+
+			int length = 0;
 	        for (Entry<Integer, Integer> e: hs.entrySet()) {  
 	        	size += e.getValue();
 	        	
-//	        	System.out.println((double)size/count);
 	        	if((double)size/count >= 0.99){
 	        		length = e.getKey();
 	        		break;
 	        	}
-//	            System.out.println(e.getKey()+":"+e.getValue());  
 	        } 
-//	        System.out.println(count+" "+length);
-			wrapper = new DictionaryWrapper(length, wordSet);
+	        wrapper = new DictionaryWrapper(length, wordSet);
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
 		return wrapper;	
